@@ -1,0 +1,106 @@
+@import "./meetoo-thema.less";
+
+.text-shadow(@shadow-color) {
+    /* 参考・http://kumacrow.blog111.fc2.com/blog-entry-278.html */
+    text-shadow: 0 0 2px @shadow-color, 0 0 2px @shadow-color, 0 0 2px @shadow-color, 0 0 2px @shadow-color;
+}
+
+body {
+    font-family:"ヒラギノ角ゴ Pro W3","Hiragino Kaku Gothic Pro","ＭＳ Ｐゴシック","MS PGothic",Osaka,sans-self,Verdana,Arial,Helvetica;
+    z-index: @depth-main;
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+a, a:visited {
+    color: inherit;
+}
+a:hover {
+    color: rgba(255,255,0,1);
+    text-decoration: none;
+}
+
+#header {
+    width: 100%;
+    text-align: center;
+    color: @accent-fore-color;
+    background: fadeOut(@accent-back-color, 20%);
+    z-index: @depth-fixed-layout;
+    .text-shadow(@accent-back-color);
+}
+
+img.logo {
+    display: block;
+    max-width: 100%;
+    max-height: 64px;
+    margin: 0 auto;
+}
+
+#footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background: rgba(255,255,255,1);
+    box-shadow: 0px -1px 0 fadeout(@footer-color, 10%);
+    border-top: solid 1px fadeout(@footer-color, 50%);
+    color: @footer-color;
+    font-size: small;
+    text-align: center;
+    > a {
+        color: inherit;
+    }
+}
+
+.fade-out-leave {
+    opacity: 1;
+    transition: opacity .3s ease-in;
+}
+.fade-out-leave-active {
+    opacity: 0;
+}
+
+.fade-in-enter {
+    opacity: 0;
+    transition: opacity 3s ease-in;
+}
+.fade-in-enter-active {
+    opacity: 1;
+}
+
+.transition-fade-enter {
+    opacity: 0;
+    transition: opacity .3s ease-in;
+}
+.transition-fade-enter-active {
+    opacity: 1;
+}
+.transition-fade-leave {
+    opacity: 1;
+    transition: opacity .3s ease-in;
+}
+.transition-fade-leave-active {
+    opacity: 0;
+}
+
+.transition-from-top-enter {
+    height: 0 !important;
+    opacity: 0;
+    transition: all .3s ease-in;
+}
+.transition-from-top-enter-active {
+    min-height: 100px !important;
+    opacity: 1;
+}
+.transition-from-top-leave {
+    top: 0px !important;
+    opacity: 1;
+    transition: all .3s ease-in;
+}
+.transition-from-top-leave-active {
+    top: -200px !important;
+    opacity: 0;
+}

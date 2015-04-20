@@ -1,0 +1,14 @@
+{{define "title"}}ようこそ！{{end}}
+{{define "page.css"}}
+  {{"/css/index.css.min"|cssTag}}
+{{end}}
+{{define "page.js"}}
+  {{"/js/common/jquery.activity-indicator-1.0.0.min.js"|jsTag}}
+  {{"/js/common/indicator.js.min"|jsTag}}
+  {{"/js/common/message.js.min"|jsTag}}
+  {{"/js/index.js"|jsTag}}
+{{end}}
+
+{{define "contents"}}
+    <div id="page"></div>
+{{end}}
