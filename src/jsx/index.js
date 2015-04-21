@@ -9,6 +9,8 @@ var Item = React.createClass({
             image: null,
             indicatorActive: false,
             imageSelecterVisible: true,
+            itemName: this.props.data.name,
+            itemDescription: this.props.data.description,
             imageUrl: this.props.data.url
         };
     },
@@ -32,6 +34,7 @@ var Item = React.createClass({
     },
     handleDrop: function(e) {
         try {
+            if (!this.props.editMode) return;
             if (!e.dataTransfer) return;
             var files = e.dataTransfer.files;
             if (!files) return;
@@ -52,9 +55,20 @@ var Item = React.createClass({
         return (
             <div className="Item">
                 <fieldset>
-                    <legend>{this.props.data.name}</legend>
-                    <img src={this.state.imageUrl} className="item-image" ref="image" onDragOver={this.handleDragOver} onDrop={this.handleDrop} />
-                    <p className="item-description">{this.props.data.description}</p>
+                    <legend>
+                        {!this.props.editMode ?
+                        <span>{this.state.itemName}</span>
+                        : null }
+                        {this.props.editMode ?
+                        <input type="text" ref="name" className="item-name" defaultValue={this.state.itemName} />
+                        : null }
+                    </legend>
+                    <img src={this.state.imageUrl ? this.state.imageUrl : "/img/unset.png"}
+                         className="item-image" ref="image"
+                         onDragOver={this.handleDragOver}
+                         onDrop={this.handleDrop}
+                    />
+                    <p className="item-description">{this.state.itemDescription}</p>
                     <Indicator buttonRef={this.state.image} active={this.state.indicatorActive} />
                 </fieldset>
             </div>
@@ -62,18 +76,78 @@ var Item = React.createClass({
     }
 });
 
+var ItemList = React.createClass({
+    getInitialState: function() {
+        return {
+            items: [],
+            editMode: false
+        };
+    },
+    componentDidMount: function() {
+        $.ajax({
+            url: "/items/",
+            type: "get",
+            success: function(response) {
+                this.setState({ items: response });
+            }.bind(this),
+
+            fail: function() {
+                console.log(arguments);
+            }
+        });
+    },
+    handleGoEditClick: function() {
+        this.setState({ editMode: true });
+    },
+    handleCancelEditClick: function() {
+        this.setState({ editMode: false });
+    },
+    handleSaveClick: function() {
+        // TODO データの保存
+        this.setState({ editMode: false });
+    },
+    render: function() {
+        var items = this.state.items.map(function(item) {
+            return (
+                <Item key={"item_" + item.id} data={item} editMode={this.state.editMode} />
+            );
+        }.bind(this));
+        return (
+            <div className="ItemList col-md-9">
+                <div className="tool-box">
+                    {!this.state.editMode ?
+                    <button key={"go-edit_" + !this.state.editMode} className="btn btn-default" onClick={this.handleGoEditClick}>
+                        <i className="glyphicon glyphicon-pencil" />
+                    </button>
+                    : null }
+                    {this.state.editMode ?
+                    <button key={"cancel-edit_" + this.state.editMode} className="btn btn-default" onClick={this.handleCancelEditClick}>
+                        <i className="glyphicon glyphicon-floppy-disk" />
+                    </button>
+                    : null }
+                    {this.state.editMode ?
+                    <button key={"save_" + this.state.editMode} className="btn btn-default" onClick={this.handleSaveClick}>
+                        <i className="glyphicon glyphicon-remove" />
+                    </button>
+                    : null }
+                </div>
+                <div className="item-list">
+                    {items}
+                </div>
+            </div>
+        );
+    }
+});
+
 var Page = React.createClass({
     render: function() {
-        var data = { url: "", description: "説明", name: "祭壇：菊" };
         return (
             <div className="Page container">
                 <div className="row">
                     <div className="col-md-3">
                         メニュー
                     </div>
-                    <div className="col-md-9">
-                        <Item data={data} />
-                    </div>
+                    <ItemList />
                 </div>
             </div>
         )

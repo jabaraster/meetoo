@@ -34,7 +34,7 @@ func init() {
 func createDb() (*genmai.DB, error) {
     switch env.DbKind() {
         case env.DbKindSQLite3:
-            return genmai.New(&genmai.SQLite3Dialect{}, "./f2.db")
+            return genmai.New(&genmai.SQLite3Dialect{}, "./meetoo.db")
         case env.DbKindPostgreSQL:
             return genmai.New(&genmai.PostgresDialect{}, "host=" + env.PostgresHost() + " dbname=" + env.PostgresDbName() + " user=" + env.PostgresUser() + " password=" + env.PostgresPassword() + " sslmode=" + env.PostgresSslMode())
     }
@@ -43,7 +43,9 @@ func createDb() (*genmai.DB, error) {
 
 func insertTestData() {
     rand.Seed(time.Now().UnixNano())
-    if _, err := db.Insert(&Item{Name: fmt.Sprintf("%d", rand.Int31n(9999)), Description: "これはアイテムの説明文です。"}); err != nil {
+    var desc = "これはアイテムの説明文です。"
+    var url  = "/img/ff.png"
+    if _, err := db.Insert(&Item{Name: fmt.Sprintf("%d", rand.Int31n(9999)), Description: &desc, Url: &url}); err != nil {
         panic(err)
     }
 }

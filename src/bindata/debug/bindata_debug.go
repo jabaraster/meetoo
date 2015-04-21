@@ -95,6 +95,96 @@ func assets_css_common_meetoo_css_min() (*asset, error) {
 	return a, err
 }
 
+// assets_css_fonts_glyphicons_halflings_regular_eot reads file data from disk. It returns an error on failure.
+func assets_css_fonts_glyphicons_halflings_regular_eot() (*asset, error) {
+	path := "/Users/jabaraster/Documents/Develop/Go/meetoo/assets/css/fonts/glyphicons-halflings-regular.eot"
+	name := "assets/css/fonts/glyphicons-halflings-regular.eot"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// assets_css_fonts_glyphicons_halflings_regular_svg reads file data from disk. It returns an error on failure.
+func assets_css_fonts_glyphicons_halflings_regular_svg() (*asset, error) {
+	path := "/Users/jabaraster/Documents/Develop/Go/meetoo/assets/css/fonts/glyphicons-halflings-regular.svg"
+	name := "assets/css/fonts/glyphicons-halflings-regular.svg"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// assets_css_fonts_glyphicons_halflings_regular_ttf reads file data from disk. It returns an error on failure.
+func assets_css_fonts_glyphicons_halflings_regular_ttf() (*asset, error) {
+	path := "/Users/jabaraster/Documents/Develop/Go/meetoo/assets/css/fonts/glyphicons-halflings-regular.ttf"
+	name := "assets/css/fonts/glyphicons-halflings-regular.ttf"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// assets_css_fonts_glyphicons_halflings_regular_woff reads file data from disk. It returns an error on failure.
+func assets_css_fonts_glyphicons_halflings_regular_woff() (*asset, error) {
+	path := "/Users/jabaraster/Documents/Develop/Go/meetoo/assets/css/fonts/glyphicons-halflings-regular.woff"
+	name := "assets/css/fonts/glyphicons-halflings-regular.woff"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// assets_css_fonts_glyphicons_halflings_regular_woff2 reads file data from disk. It returns an error on failure.
+func assets_css_fonts_glyphicons_halflings_regular_woff2() (*asset, error) {
+	path := "/Users/jabaraster/Documents/Develop/Go/meetoo/assets/css/fonts/glyphicons-halflings-regular.woff2"
+	name := "assets/css/fonts/glyphicons-halflings-regular.woff2"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
 // assets_css_index_css reads file data from disk. It returns an error on failure.
 func assets_css_index_css() (*asset, error) {
 	path := "/Users/jabaraster/Documents/Develop/Go/meetoo/assets/css/index.css"
@@ -153,6 +243,60 @@ func assets_html_common_basic_layout_html() (*asset, error) {
 func assets_html_index_html() (*asset, error) {
 	path := "/Users/jabaraster/Documents/Develop/Go/meetoo/assets/html/index.html"
 	name := "assets/html/index.html"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// assets_img_ff_png reads file data from disk. It returns an error on failure.
+func assets_img_ff_png() (*asset, error) {
+	path := "/Users/jabaraster/Documents/Develop/Go/meetoo/assets/img/ff.png"
+	name := "assets/img/ff.png"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// assets_img_top_jpg reads file data from disk. It returns an error on failure.
+func assets_img_top_jpg() (*asset, error) {
+	path := "/Users/jabaraster/Documents/Develop/Go/meetoo/assets/img/top.jpg"
+	name := "assets/img/top.jpg"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// assets_img_unset_png reads file data from disk. It returns an error on failure.
+func assets_img_unset_png() (*asset, error) {
+	path := "/Users/jabaraster/Documents/Develop/Go/meetoo/assets/img/unset.png"
+	name := "assets/img/unset.png"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
 		return nil, err
@@ -475,10 +619,18 @@ var _bindata = map[string]func() (*asset, error){
 	"assets/css/common/meetoo-thema.css": assets_css_common_meetoo_thema_css,
 	"assets/css/common/meetoo.css": assets_css_common_meetoo_css,
 	"assets/css/common/meetoo.css.min": assets_css_common_meetoo_css_min,
+	"assets/css/fonts/glyphicons-halflings-regular.eot": assets_css_fonts_glyphicons_halflings_regular_eot,
+	"assets/css/fonts/glyphicons-halflings-regular.svg": assets_css_fonts_glyphicons_halflings_regular_svg,
+	"assets/css/fonts/glyphicons-halflings-regular.ttf": assets_css_fonts_glyphicons_halflings_regular_ttf,
+	"assets/css/fonts/glyphicons-halflings-regular.woff": assets_css_fonts_glyphicons_halflings_regular_woff,
+	"assets/css/fonts/glyphicons-halflings-regular.woff2": assets_css_fonts_glyphicons_halflings_regular_woff2,
 	"assets/css/index.css": assets_css_index_css,
 	"assets/css/index.css.min": assets_css_index_css_min,
 	"assets/html/common/basic-layout.html": assets_html_common_basic_layout_html,
 	"assets/html/index.html": assets_html_index_html,
+	"assets/img/ff.png": assets_img_ff_png,
+	"assets/img/top.jpg": assets_img_top_jpg,
+	"assets/img/unset.png": assets_img_unset_png,
 	"assets/js/common/JSXTransformer.js": assets_js_common_jsxtransformer_js,
 	"assets/js/common/bootstrap.min.js": assets_js_common_bootstrap_min_js,
 	"assets/js/common/indicator.js": assets_js_common_indicator_js,
@@ -547,6 +699,18 @@ var _bintree = &_bintree_t{nil, map[string]*_bintree_t{
 				"meetoo.css.min": &_bintree_t{assets_css_common_meetoo_css_min, map[string]*_bintree_t{
 				}},
 			}},
+			"fonts": &_bintree_t{nil, map[string]*_bintree_t{
+				"glyphicons-halflings-regular.eot": &_bintree_t{assets_css_fonts_glyphicons_halflings_regular_eot, map[string]*_bintree_t{
+				}},
+				"glyphicons-halflings-regular.svg": &_bintree_t{assets_css_fonts_glyphicons_halflings_regular_svg, map[string]*_bintree_t{
+				}},
+				"glyphicons-halflings-regular.ttf": &_bintree_t{assets_css_fonts_glyphicons_halflings_regular_ttf, map[string]*_bintree_t{
+				}},
+				"glyphicons-halflings-regular.woff": &_bintree_t{assets_css_fonts_glyphicons_halflings_regular_woff, map[string]*_bintree_t{
+				}},
+				"glyphicons-halflings-regular.woff2": &_bintree_t{assets_css_fonts_glyphicons_halflings_regular_woff2, map[string]*_bintree_t{
+				}},
+			}},
 			"index.css": &_bintree_t{assets_css_index_css, map[string]*_bintree_t{
 			}},
 			"index.css.min": &_bintree_t{assets_css_index_css_min, map[string]*_bintree_t{
@@ -558,6 +722,14 @@ var _bintree = &_bintree_t{nil, map[string]*_bintree_t{
 				}},
 			}},
 			"index.html": &_bintree_t{assets_html_index_html, map[string]*_bintree_t{
+			}},
+		}},
+		"img": &_bintree_t{nil, map[string]*_bintree_t{
+			"ff.png": &_bintree_t{assets_img_ff_png, map[string]*_bintree_t{
+			}},
+			"top.jpg": &_bintree_t{assets_img_top_jpg, map[string]*_bintree_t{
+			}},
+			"unset.png": &_bintree_t{assets_img_unset_png, map[string]*_bintree_t{
 			}},
 		}},
 		"js": &_bintree_t{nil, map[string]*_bintree_t{

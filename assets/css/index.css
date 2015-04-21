@@ -1,20 +1,27 @@
-.file-drop-area {
-  background: #ffe6e6;
-  border: dotted 4px #646464;
-  text-align: center;
-  min-height: 100px;
-  border-radius: 8px;
+.Page .tool-box {
+  text-align: right;
 }
-.Page {
-  margin-top: 10px;
+.Page button {
+  border: none;
+}
+.Item {
+  padding: 6px;
+  border-radius: 6px;
 }
 .Item .item-image {
-  cursor: pointer;
   width: 200px;
+  height: 100px;
+}
+.Item .item-name {
+  margin-bottom: 2px;
 }
 .Item .item-description {
   margin: 10px;
   display: inline-block;
   vertical-align: top;
   border: solid 1px red;
+}
+.Item:hover {
+  cursor: pointer;
+  background: rgba(255, 230, 230, 0.6);
 }
