@@ -1,8 +1,14 @@
+.Page {
+  margin-bottom: 20px;
+}
 .Page .tool-box {
   text-align: right;
 }
-.Page .tool-box-button {
+.tool-box-button {
   border: none;
+}
+.ItemEditor .item-image {
+  max-width: 400px;
 }
 .Item {
   padding: 6px;

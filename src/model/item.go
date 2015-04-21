@@ -36,3 +36,12 @@ func GetAllItems() []Item {
     }
     return item
 }
+
+func InsertItem(name string, description string, imageDataUrl string) {
+    if _, err := db.Insert(&Item{ Name: name, Description: &description, Url: &imageDataUrl }); err != nil {
+        panic(err)
+    }
+}
+
+func UpdateItem(itemId string, name string, description string, imageDataUrl string) {
+}

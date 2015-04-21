@@ -12,7 +12,7 @@ window.Indicator = React.createClass({displayName: "Indicator",
         var button = $(this.props.buttonRef);
         indicator.height(button.outerHeight());
         indicator.width(button.outerWidth());
-        indicator.css(button.position());
+        indicator.css(button.offset());
         indicator.show().activity();
     },
     handle: function(e) {

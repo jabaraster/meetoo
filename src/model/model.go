@@ -28,7 +28,7 @@ func init() {
         panic(err)
     }
 
-    insertTestData()
+    //insertTestData()
 }
 
 func createDb() (*genmai.DB, error) {

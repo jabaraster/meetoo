@@ -3,19 +3,17 @@
 
 var TransitionGroup = React.addons.CSSTransitionGroup;
 
-var Item = React.createClass({
+var ItemEditor = React.createClass({
     getInitialState: function() {
         return {
-            image: null,
-            indicatorActive: false,
-            imageSelecterVisible: true,
-            itemName: this.props.data.name,
-            itemDescription: this.props.data.description,
-            imageUrl: this.props.data.url
+            id: this.props.data.id,
+            name: this.props.data.name,
+            imageUrl: this.props.data.url,
+            description: this.props.data.description,
+
+            indicatorFor: null,
+            indicatorActive: false
         };
-    },
-    componentDidMount: function() {
-        this.setState({ image: React.findDOMNode(this.refs.image) });
     },
     handleFileSelect: function(files) {
         if (files.length === 0) return;
@@ -23,10 +21,10 @@ var Item = React.createClass({
         $(fr).on("load", function(e) {
                 this.setState({
                     imageUrl: e.target.result,
-                    indicatorActive: false
+                    indicatorActive: false,
                 });
         }.bind(this));
-        this.setState({ indicatorActive: true });
+        this.setState({ indicatorFor: React.findDOMNode(this.refs.image), indicatorActive: true });
         fr.readAsDataURL(files[0]);
     },
     handleDragOver: function(e) {
@@ -34,22 +32,126 @@ var Item = React.createClass({
     },
     handleDrop: function(e) {
         try {
-            if (!this.props.editMode) return;
             if (!e.dataTransfer) return;
             var files = e.dataTransfer.files;
             if (!files) return;
-
-            this.setState({ files: files });
             this.handleFileSelect(files);
 
         } finally {
             this.cancel(e);
         }
     },
+    handleCloseClick: function(e) {
+        e.preventDefault();
+        if (this.props.onCloseClick) this.props.onCloseClick({});
+    },
+    handleSubmit: function(e) {
+        var name = React.findDOMNode(this.refs.name).value;
+        var imageDataUrl = $(React.findDOMNode(this.refs.image)).attr("src");
+        var desc = React.findDOMNode(this.refs.description).value;
+        var url = this.state.id ? "/items/" + this.state.id : "/items/";
+        this.setState({ indicatorFor: React.findDOMNode(this.refs.form), indicatorActive: true });
+        $.ajax({
+            url: url,
+            type: "post",
+            data: { name: name, imageDataUrl: imageDataUrl, description: desc },
+            success: function(response) {
+                this.setState({ visible: false, indicatorActive: false });
+                if (response.operation === "INSERT") {
+                    if (this.props.onInsert) this.props.onInsert({});
+                } else {
+                    if (this.props.onUpdate) this.props.onUpdate({});
+                }
+            }.bind(this),
+            fail: function() {
+                this.setState({ indicatorActive: false });
+                console.log(arguments);
+            },
+            complete: function() {
+            }.bind(this)
+        });
+        e.preventDefault();
+    },
     cancel: function(e) {
         e.preventDefault();
         e.stopPropagation();
         return false;
+    },
+    componentDidMount: function() {
+        $(".ItemEditor2 .item-editor-dialog").on("show.bs.modal", function(e) {
+            console.log(e);
+        });
+    },
+    componentDidUpdate: function(newProp, state) {
+        if (this.props.visible) {
+            $(".item-editor-dialog").modal({ show: true });
+        } else {
+            $(".item-editor-dialog").modal({ show: false });
+        }
+    },
+    render: function() {
+        var imageSet = !!this.state.imageUrl;
+        return (
+            <div className="ItemEditor">
+              <div className="item-editor-dialog modal fade">
+                <div className="modal-dialog">
+                    <div className="modal-content">
+                      <div className="modal-header">
+                        <button type="button" className="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 className=".item-editor-dialog-title modal-title">アイテム編集</h4>
+                      </div>
+                      <div className="modal-body">
+
+                        <form className="item-edit-form"
+                              ref="form"
+                              onDragOver={this.handleDragOver}
+                              onDrop={this.handleDrop}
+                        >
+                            <div className="form-group">
+                                <input type="text"
+                                       ref="name"
+                                       className="form-control"
+                                       defaultValue={this.props.data.name}
+                                       placeholder="アイテム名"
+                                />
+                            </div>
+                            <div className="form-group">
+                                <textarea className="item-description form-control"
+                                          ref="description"
+                                          placeholder="説明">{this.props.data.description}</textarea>
+                            </div>
+                            <div className="form-group">
+                                <img src={imageSet ? this.state.imageUrl : "/img/unset.png"}
+                                     className="item-image"
+                                     ref="image"
+                                />
+                                {!imageSet ?
+                                <span>画像をドラッグ＆ドロップ</span>
+                                :null }
+                                <Indicator buttonRef={this.state.indicatorFor} active={this.state.indicatorActive} />
+                            </div>
+                        </form>
+
+                      </div>
+                      <div className="modal-footer">
+                        <button type="button" className="item-editor-close-button btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" className="btn btn-primary" onClick={this.handleSubmit}>Save changes</button>
+                      </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+        );
+    }
+});
+
+var Item = React.createClass({
+    getInitialState: function() {
+        return {
+            itemName: this.props.data.name,
+            itemDescription: this.props.data.description,
+            imageUrl: this.props.data.url
+        };
     },
     handleRemoverClick: function() {
         this.props.onRemoverClick({ data: this.props.data });
@@ -66,23 +168,20 @@ var Item = React.createClass({
                     : null }
                 </TransitionGroup>
                 <fieldset className="fields">
-                    <TransitionGroup transitionName="transition-rotation">
-                        <legend>
-                            {!this.props.editMode ?
-                            <span>{this.state.itemName}</span>
-                            : null }
-                            {this.props.editMode ?
-                            <input type="text" ref="name" className="item-name" defaultValue={this.state.itemName} />
-                            : null }
-                        </legend>
-                        <img src={this.state.imageUrl ? this.state.imageUrl : "/img/unset.png"}
-                             className="item-image" ref="image"
-                             onDragOver={this.handleDragOver}
-                             onDrop={this.handleDrop}
-                        />
-                        <p className="item-description">{this.state.itemDescription}</p>
-                        <Indicator buttonRef={this.state.image} active={this.state.indicatorActive} />
-                    </TransitionGroup>
+                    <legend>
+                        {!this.props.editMode ?
+                        <span>{this.state.itemName}</span>
+                        : null }
+                        {this.props.editMode ?
+                        <input type="text" ref="name" className="item-name" defaultValue={this.state.itemName} />
+                        : null }
+                    </legend>
+                    <img src={this.state.imageUrl ? this.state.imageUrl : "/img/unset.png"}
+                         className="item-image" ref="image"
+                         onDragOver={this.handleDragOver}
+                         onDrop={this.handleDrop}
+                    />
+                    <p className="item-description">{this.state.itemDescription}</p>
                 </fieldset>
             </div>
         );
@@ -90,88 +189,23 @@ var Item = React.createClass({
 });
 
 var ItemList = React.createClass({
-    getInitialState: function() {
-        return {
-            items: [],
-            editMode: false,
-            itemsSave: []
-        };
-    },
-    componentDidMount: function() {
-        $.ajax({
-            url: "/items/",
-            type: "get",
-            success: function(response) {
-                this.setState({ items: response });
-            }.bind(this),
-
-            fail: function() {
-                console.log(arguments);
-            }
-        });
-    },
     handleAddClick: function() {
-        var newItems = [{}].concat(this.state.items);
-        this.setState({
-            items: newItems,
-            itemsSave: this.state.items,
-            editMode: true
-        });
-    },
-    handleGoEditClick: function() {
-        this.setState({
-            itemsSave: this.state.items,
-            editMode: true
-        });
-    },
-    handleCancelEditClick: function() {
-        console.log(this.state);
-        this.setState({ items: this.state.itemsSave }, function() {
-            this.setState({ editMode: false });
-        }.bind(this));
-    },
-    handleSaveClick: function() {
-        this.setState({ editMode: false });
-    },
-    handleItemRemove: function(e) {
-        var removeData = e.data;
-        var newItems = [];
-        this.state.items.forEach(function(item) {
-            if (removeData !== item) {
-                newItems.push(item);
-            }
-        });
-        this.setState({ items: newItems });
+        if (this.props.onAddClick) this.props.onAddClick();
     },
     render: function() {
-        var items = this.state.items.map(function(item) {
+        var items = this.props.items.map(function(item) {
             return (
                 <li>
-                    <Item key={"item_" + item.id} data={item} editMode={this.state.editMode} onRemoverClick={this.handleItemRemove} />
+                    <Item key={"item_" + item.id} data={item} />
                 </li>
             );
         }.bind(this));
         return (
             <div className="ItemList col-md-9">
                 <div className="tool-box">
-                    <button key={"add_" + !this.state.editMode} className="btn btn-default tool-box-button" onClick={this.handleAddClick}>
+                    <button className="btn btn-default tool-box-button" onClick={this.handleAddClick}>
                         <i className="glyphicon glyphicon-plus" />
                     </button>
-                    {!this.state.editMode ?
-                    <button key={"go-edit_" + !this.state.editMode} className="btn btn-default tool-box-button" onClick={this.handleGoEditClick}>
-                        <i className="glyphicon glyphicon-pencil" />
-                    </button>
-                    : null }
-                    {this.state.editMode ?
-                    <button key={"cancel-edit_" + this.state.editMode} className="btn btn-default tool-box-button" onClick={this.handleSaveClick}>
-                        <i className="glyphicon glyphicon-floppy-disk" />
-                    </button>
-                    : null }
-                    {this.state.editMode ?
-                    <button key={"save_" + this.state.editMode} className="btn btn-default tool-box-button" onClick={this.handleCancelEditClick}>
-                        <i className="glyphicon glyphicon-remove" />
-                    </button>
-                    : null }
                 </div>
                 <ul className="item-list">
                     {items}
@@ -182,6 +216,35 @@ var ItemList = React.createClass({
 });
 
 var Page = React.createClass({
+    getInitialState: function() {
+        return {
+            items: [],
+
+            editorData: {},
+            editorVisible: false
+        };
+    },
+    componentDidMount: function() {
+        getAllItems(function(response) {
+            this.setState({ items: response });
+        }.bind(this));
+    },
+    handleAddClick: function() {
+        this.setState({ editorVisible: true });
+    },
+    handleEditorCloseClick: function() {
+        this.setState({ editorData: {}, editorVisible: false });
+    },
+    handleInsert: function() {
+        getAllItems(function(response) {
+            this.setState({ items: response, editorData: {}, editorVisible: false });
+        }.bind(this));
+    },
+    handleUpdate: function() {
+        getAllItems(function(response) {
+            this.setState({ items: response, editorData: {}, editorVisible: false });
+        }.bind(this));
+    },
     render: function() {
         return (
             <div className="Page container">
@@ -189,12 +252,32 @@ var Page = React.createClass({
                     <div className="col-md-3">
                         メニュー
                     </div>
-                    <ItemList />
+                    <ItemList items={this.state.items} onAddClick={this.handleAddClick} />
                 </div>
+                <ItemEditor data={this.state.editorData}
+                            visible={this.state.editorVisible}
+                            onCloseClick={this.handleEditorCloseClick}
+                            onInsert={this.handleInsert}
+                            onUpdate={this.handleUpdate}
+                />
             </div>
         )
     }
 });
+
+var getAllItems = function(successHandler) {
+    $.ajax({
+        url: "/items/",
+        type: "get",
+        success: function(response) {
+            successHandler(response);
+        }.bind(this),
+
+        fail: function() {
+            console.log(arguments);
+        }
+    });
+};
 
 React.render(
     <Page />,

@@ -20,6 +20,8 @@ func main() {
 
     // API
     goji.Get("/items/", handler.GetAllItems)
+    goji.Post("/items/", handler.RegisterItem)
+    goji.Post("/items/:itemId", handler.RegisterItem)
 
     // 静的リソース
     goji.Get("/css/*", assets.ContentTypeHandler("text/css"))
