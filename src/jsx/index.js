@@ -51,31 +51,38 @@ var Item = React.createClass({
         e.stopPropagation();
         return false;
     },
+    handleRemoverClick: function() {
+        this.props.onRemoverClick({ data: this.props.data });
+    },
     render: function() {
         return (
             <div className="Item">
                 <hr/>
-                {this.props.editMode ?
-                <button className="remover btn btn-lg">
-                    <i className="glyphicon glyphicon-minus-sign" />
-                </button>
-                : null }
+                <TransitionGroup transitionName="transition-rotation">
+                    {this.props.editMode ?
+                    <button key={"remover_" + this.props.editMode} onClick={this.handleRemoverClick} className="remover btn btn-default btn-lg tool-box-button">
+                        <i className="glyphicon glyphicon-minus-sign" />
+                    </button>
+                    : null }
+                </TransitionGroup>
                 <fieldset className="fields">
-                    <legend>
-                        {!this.props.editMode ?
-                        <span>{this.state.itemName}</span>
-                        : null }
-                        {this.props.editMode ?
-                        <input type="text" ref="name" className="item-name" defaultValue={this.state.itemName} />
-                        : null }
-                    </legend>
-                    <img src={this.state.imageUrl ? this.state.imageUrl : "/img/unset.png"}
-                         className="item-image" ref="image"
-                         onDragOver={this.handleDragOver}
-                         onDrop={this.handleDrop}
-                    />
-                    <p className="item-description">{this.state.itemDescription}</p>
-                    <Indicator buttonRef={this.state.image} active={this.state.indicatorActive} />
+                    <TransitionGroup transitionName="transition-rotation">
+                        <legend>
+                            {!this.props.editMode ?
+                            <span>{this.state.itemName}</span>
+                            : null }
+                            {this.props.editMode ?
+                            <input type="text" ref="name" className="item-name" defaultValue={this.state.itemName} />
+                            : null }
+                        </legend>
+                        <img src={this.state.imageUrl ? this.state.imageUrl : "/img/unset.png"}
+                             className="item-image" ref="image"
+                             onDragOver={this.handleDragOver}
+                             onDrop={this.handleDrop}
+                        />
+                        <p className="item-description">{this.state.itemDescription}</p>
+                        <Indicator buttonRef={this.state.image} active={this.state.indicatorActive} />
+                    </TransitionGroup>
                 </fieldset>
             </div>
         );
@@ -86,7 +93,8 @@ var ItemList = React.createClass({
     getInitialState: function() {
         return {
             items: [],
-            editMode: false
+            editMode: false,
+            itemsSave: []
         };
     },
     componentDidMount: function() {
@@ -102,39 +110,65 @@ var ItemList = React.createClass({
             }
         });
     },
+    handleAddClick: function() {
+        var newItems = [{}].concat(this.state.items);
+        this.setState({
+            items: newItems,
+            itemsSave: this.state.items,
+            editMode: true
+        });
+    },
     handleGoEditClick: function() {
-        this.setState({ editMode: true });
+        this.setState({
+            itemsSave: this.state.items,
+            editMode: true
+        });
     },
     handleCancelEditClick: function() {
-        this.setState({ editMode: false });
+        console.log(this.state);
+        this.setState({ items: this.state.itemsSave }, function() {
+            this.setState({ editMode: false });
+        }.bind(this));
     },
     handleSaveClick: function() {
-        // TODO データの保存
         this.setState({ editMode: false });
+    },
+    handleItemRemove: function(e) {
+        var removeData = e.data;
+        var newItems = [];
+        this.state.items.forEach(function(item) {
+            if (removeData !== item) {
+                newItems.push(item);
+            }
+        });
+        this.setState({ items: newItems });
     },
     render: function() {
         var items = this.state.items.map(function(item) {
             return (
                 <li>
-                    <Item key={"item_" + item.id} data={item} editMode={this.state.editMode} />
+                    <Item key={"item_" + item.id} data={item} editMode={this.state.editMode} onRemoverClick={this.handleItemRemove} />
                 </li>
             );
         }.bind(this));
         return (
             <div className="ItemList col-md-9">
                 <div className="tool-box">
+                    <button key={"add_" + !this.state.editMode} className="btn btn-default tool-box-button" onClick={this.handleAddClick}>
+                        <i className="glyphicon glyphicon-plus" />
+                    </button>
                     {!this.state.editMode ?
-                    <button key={"go-edit_" + !this.state.editMode} className="btn btn-default" onClick={this.handleGoEditClick}>
+                    <button key={"go-edit_" + !this.state.editMode} className="btn btn-default tool-box-button" onClick={this.handleGoEditClick}>
                         <i className="glyphicon glyphicon-pencil" />
                     </button>
                     : null }
                     {this.state.editMode ?
-                    <button key={"cancel-edit_" + this.state.editMode} className="btn btn-default" onClick={this.handleCancelEditClick}>
+                    <button key={"cancel-edit_" + this.state.editMode} className="btn btn-default tool-box-button" onClick={this.handleSaveClick}>
                         <i className="glyphicon glyphicon-floppy-disk" />
                     </button>
                     : null }
                     {this.state.editMode ?
-                    <button key={"save_" + this.state.editMode} className="btn btn-default" onClick={this.handleSaveClick}>
+                    <button key={"save_" + this.state.editMode} className="btn btn-default tool-box-button" onClick={this.handleCancelEditClick}>
                         <i className="glyphicon glyphicon-remove" />
                     </button>
                     : null }

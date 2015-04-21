@@ -51,31 +51,38 @@ var Item = React.createClass({displayName: "Item",
         e.stopPropagation();
         return false;
     },
+    handleRemoverClick: function() {
+        this.props.onRemoverClick({ data: this.props.data });
+    },
     render: function() {
         return (
             React.createElement("div", {className: "Item"}, 
                 React.createElement("hr", null), 
-                this.props.editMode ?
-                React.createElement("button", {className: "remover btn btn-lg"}, 
-                    React.createElement("i", {className: "glyphicon glyphicon-minus-sign"})
-                )
-                : null, 
+                React.createElement(TransitionGroup, {transitionName: "transition-rotation"}, 
+                    this.props.editMode ?
+                    React.createElement("button", {key: "remover_" + this.props.editMode, onClick: this.handleRemoverClick, className: "remover btn btn-default btn-lg tool-box-button"}, 
+                        React.createElement("i", {className: "glyphicon glyphicon-minus-sign"})
+                    )
+                    : null
+                ), 
                 React.createElement("fieldset", {className: "fields"}, 
-                    React.createElement("legend", null, 
-                        !this.props.editMode ?
-                        React.createElement("span", null, this.state.itemName)
-                        : null, 
-                        this.props.editMode ?
-                        React.createElement("input", {type: "text", ref: "name", className: "item-name", defaultValue: this.state.itemName})
-                        : null
-                    ), 
-                    React.createElement("img", {src: this.state.imageUrl ? this.state.imageUrl : "/img/unset.png", 
-                         className: "item-image", ref: "image", 
-                         onDragOver: this.handleDragOver, 
-                         onDrop: this.handleDrop}
-                    ), 
-                    React.createElement("p", {className: "item-description"}, this.state.itemDescription), 
-                    React.createElement(Indicator, {buttonRef: this.state.image, active: this.state.indicatorActive})
+                    React.createElement(TransitionGroup, {transitionName: "transition-rotation"}, 
+                        React.createElement("legend", null, 
+                            !this.props.editMode ?
+                            React.createElement("span", null, this.state.itemName)
+                            : null, 
+                            this.props.editMode ?
+                            React.createElement("input", {type: "text", ref: "name", className: "item-name", defaultValue: this.state.itemName})
+                            : null
+                        ), 
+                        React.createElement("img", {src: this.state.imageUrl ? this.state.imageUrl : "/img/unset.png", 
+                             className: "item-image", ref: "image", 
+                             onDragOver: this.handleDragOver, 
+                             onDrop: this.handleDrop}
+                        ), 
+                        React.createElement("p", {className: "item-description"}, this.state.itemDescription), 
+                        React.createElement(Indicator, {buttonRef: this.state.image, active: this.state.indicatorActive})
+                    )
                 )
             )
         );
@@ -86,7 +93,8 @@ var ItemList = React.createClass({displayName: "ItemList",
     getInitialState: function() {
         return {
             items: [],
-            editMode: false
+            editMode: false,
+            itemsSave: []
         };
     },
     componentDidMount: function() {
@@ -102,39 +110,65 @@ var ItemList = React.createClass({displayName: "ItemList",
             }
         });
     },
+    handleAddClick: function() {
+        var newItems = [{}].concat(this.state.items);
+        this.setState({
+            items: newItems,
+            itemsSave: this.state.items,
+            editMode: true
+        });
+    },
     handleGoEditClick: function() {
-        this.setState({ editMode: true });
+        this.setState({
+            itemsSave: this.state.items,
+            editMode: true
+        });
     },
     handleCancelEditClick: function() {
-        this.setState({ editMode: false });
+        console.log(this.state);
+        this.setState({ items: this.state.itemsSave }, function() {
+            this.setState({ editMode: false });
+        }.bind(this));
     },
     handleSaveClick: function() {
-        // TODO データの保存
         this.setState({ editMode: false });
+    },
+    handleItemRemove: function(e) {
+        var removeData = e.data;
+        var newItems = [];
+        this.state.items.forEach(function(item) {
+            if (removeData !== item) {
+                newItems.push(item);
+            }
+        });
+        this.setState({ items: newItems });
     },
     render: function() {
         var items = this.state.items.map(function(item) {
             return (
                 React.createElement("li", null, 
-                    React.createElement(Item, {key: "item_" + item.id, data: item, editMode: this.state.editMode})
+                    React.createElement(Item, {key: "item_" + item.id, data: item, editMode: this.state.editMode, onRemoverClick: this.handleItemRemove})
                 )
             );
         }.bind(this));
         return (
             React.createElement("div", {className: "ItemList col-md-9"}, 
                 React.createElement("div", {className: "tool-box"}, 
+                    React.createElement("button", {key: "add_" + !this.state.editMode, className: "btn btn-default tool-box-button", onClick: this.handleAddClick}, 
+                        React.createElement("i", {className: "glyphicon glyphicon-plus"})
+                    ), 
                     !this.state.editMode ?
-                    React.createElement("button", {key: "go-edit_" + !this.state.editMode, className: "btn btn-default", onClick: this.handleGoEditClick}, 
+                    React.createElement("button", {key: "go-edit_" + !this.state.editMode, className: "btn btn-default tool-box-button", onClick: this.handleGoEditClick}, 
                         React.createElement("i", {className: "glyphicon glyphicon-pencil"})
                     )
                     : null, 
                     this.state.editMode ?
-                    React.createElement("button", {key: "cancel-edit_" + this.state.editMode, className: "btn btn-default", onClick: this.handleCancelEditClick}, 
+                    React.createElement("button", {key: "cancel-edit_" + this.state.editMode, className: "btn btn-default tool-box-button", onClick: this.handleSaveClick}, 
                         React.createElement("i", {className: "glyphicon glyphicon-floppy-disk"})
                     )
                     : null, 
                     this.state.editMode ?
-                    React.createElement("button", {key: "save_" + this.state.editMode, className: "btn btn-default", onClick: this.handleSaveClick}, 
+                    React.createElement("button", {key: "save_" + this.state.editMode, className: "btn btn-default tool-box-button", onClick: this.handleCancelEditClick}, 
                         React.createElement("i", {className: "glyphicon glyphicon-remove"})
                     )
                     : null

@@ -2,7 +2,7 @@
     .tool-box {
         text-align: right;
     }
-    button {
+    .tool-box-button {
         border: none;
     }
 }
@@ -19,7 +19,7 @@
     }
     .item-image {
         width: 200px;
-        height: 100px;
+        min-height: 100px;
     }
     .item-name {
         margin-bottom: 2px;
@@ -28,7 +28,21 @@
         margin: 10px;
         display: inline-block;
         vertical-align: top;
-        border: solid 1px red;
+    }
+
+    .transition-rotation-enter {
+        transform: rotate(-90deg);
+        transition: transform .1s ease-in .0s;
+    }
+    .transition-rotation-enter-active {
+        transform: rotate(0deg);
+    }
+    .transition-rotation-leave {
+        transform: rotate(0deg);
+        transition: transform .3s ease-in 0s;
+    }
+    .transition-rotation-leave-active {
+        transform:rotate(-90deg);
     }
 }
 .Item:hover {
