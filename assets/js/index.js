@@ -54,7 +54,13 @@ var Item = React.createClass({displayName: "Item",
     render: function() {
         return (
             React.createElement("div", {className: "Item"}, 
-                React.createElement("fieldset", null, 
+                React.createElement("hr", null), 
+                this.props.editMode ?
+                React.createElement("button", {className: "remover btn btn-lg"}, 
+                    React.createElement("i", {className: "glyphicon glyphicon-minus-sign"})
+                )
+                : null, 
+                React.createElement("fieldset", {className: "fields"}, 
                     React.createElement("legend", null, 
                         !this.props.editMode ?
                         React.createElement("span", null, this.state.itemName)
@@ -109,7 +115,9 @@ var ItemList = React.createClass({displayName: "ItemList",
     render: function() {
         var items = this.state.items.map(function(item) {
             return (
-                React.createElement(Item, {key: "item_" + item.id, data: item, editMode: this.state.editMode})
+                React.createElement("li", null, 
+                    React.createElement(Item, {key: "item_" + item.id, data: item, editMode: this.state.editMode})
+                )
             );
         }.bind(this));
         return (
@@ -131,7 +139,7 @@ var ItemList = React.createClass({displayName: "ItemList",
                     )
                     : null
                 ), 
-                React.createElement("div", {className: "item-list"}, 
+                React.createElement("ul", {className: "item-list"}, 
                     items
                 )
             )

@@ -54,7 +54,13 @@ var Item = React.createClass({
     render: function() {
         return (
             <div className="Item">
-                <fieldset>
+                <hr/>
+                {this.props.editMode ?
+                <button className="remover btn btn-lg">
+                    <i className="glyphicon glyphicon-minus-sign" />
+                </button>
+                : null }
+                <fieldset className="fields">
                     <legend>
                         {!this.props.editMode ?
                         <span>{this.state.itemName}</span>
@@ -109,7 +115,9 @@ var ItemList = React.createClass({
     render: function() {
         var items = this.state.items.map(function(item) {
             return (
-                <Item key={"item_" + item.id} data={item} editMode={this.state.editMode} />
+                <li>
+                    <Item key={"item_" + item.id} data={item} editMode={this.state.editMode} />
+                </li>
             );
         }.bind(this));
         return (
@@ -131,9 +139,9 @@ var ItemList = React.createClass({
                     </button>
                     : null }
                 </div>
-                <div className="item-list">
+                <ul className="item-list">
                     {items}
-                </div>
+                </ul>
             </div>
         );
     }

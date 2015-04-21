@@ -8,6 +8,12 @@
   padding: 6px;
   border-radius: 6px;
 }
+.Item .remover {
+  color: red;
+}
+.Item .fields {
+  display: inline-block;
+}
 .Item .item-image {
   width: 200px;
   height: 100px;
