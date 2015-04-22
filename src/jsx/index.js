@@ -6,11 +6,11 @@ var TransitionGroup = React.addons.CSSTransitionGroup;
 var ItemEditor = React.createClass({
     getInitialState: function() {
         return {
-            id: this.props.data.id,
+            id: this.props.id,
             name: this.props.data.name,
             unitPrice: this.props.data.unitPrice,
-            url: this.props.data.url,
             description: this.props.data.description,
+            url: this.props.data.url,
 
             indicatorFor: null,
             indicatorActive: false
@@ -18,6 +18,12 @@ var ItemEditor = React.createClass({
     },
     handleCloseClick: function() {
         if (this.props.onCloseClick) this.props.onCloseClick({});
+    },
+    handleNameChange: function(e) {
+        this.setState({ name: e.target.value });
+    },
+    handleUnitPriceChange: function(e) {
+        this.setState({ unitPrice: e.target.value });
     },
     handleFileSelect: function(files) {
         if (files.length === 0) return;
@@ -78,10 +84,17 @@ var ItemEditor = React.createClass({
         e.stopPropagation();
         return false;
     },
-    componentDidUpdate: function(prevProps) {
-        console.log('-----------');
-        console.log(prevProps);
-        console.log(this.props);
+    componentDidUpdate: function(prevProps, prevState) {
+        if (prevProps.data !== this.props.data) {
+            this.setState({
+                id: this.props.data.id,
+                name: this.props.data.name,
+                unitPrice: this.props.data.unitPrice,
+                description: this.props.data.description,
+                url: this.props.data.url,
+            });
+        }
+
         if (this.props.visible) {
             $('.item-editor-dialog').modal('show');
         } else {
@@ -112,7 +125,8 @@ var ItemEditor = React.createClass({
                                 <input type="text"
                                        ref="name"
                                        className="item-name form-control"
-                                       defaultValue={this.state.name}
+                                       value={this.state.name}
+                                       onChange={this.handleNameChange}
                                        placeholder="アイテム名"
                                 />
                             </div>
@@ -120,7 +134,8 @@ var ItemEditor = React.createClass({
                                 <input type="number"
                                        ref="unitPrice"
                                        className="form-control"
-                                       defaultValue={this.state.unitPrice}
+                                       value={this.state.unitPrice}
+                                       onChange={this.handleUnitPriceChange}
                                        placeholder="単価"
                                 />
                             </div>
@@ -140,6 +155,7 @@ var ItemEditor = React.createClass({
                                 <Indicator buttonRef={this.state.indicatorFor} active={this.state.indicatorActive} />
                             </div>
                         </form>
+
                       </div>
                       <div className="modal-footer">
                         <button className="item-editor-close-button btn btn-default" onClick={this.handleCloseClick}>Close</button>
@@ -154,11 +170,16 @@ var ItemEditor = React.createClass({
 });
 
 var Item = React.createClass({
-    handleClick: function() {
+    handleClick: function(e) {
         if (this.props.onEditClick) this.props.onEditClick({ data: this.props.data });
     },
-    handleRemoveClick: function() {
-        if (this.props.onRemoveClick) this.props.onRemoveClick({ data: this.props.data });
+    handleRemoveClick: function(e) {
+        try {
+            if (this.props.onRemoveClick) this.props.onRemoveClick({ data: this.props.data });
+        } finally {
+            e.preventDefault();
+            e.stopPropagation();
+        }
     },
     render: function() {
         return (

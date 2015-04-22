@@ -64,7 +64,7 @@ func UpdateItem(itemId int64, name string, unitPrice *int32, description *string
     item.UnitPrice = unitPrice
     item.Description = description
     item.Url = imageDataUrl // TODO バイナリにしてURLを発行するように修正
-    if _, err := db.Update(&item); err != nil {
+    if _, err := db.Update(item); err != nil {
         panic(err)
     }
     return item, nil
