@@ -77,16 +77,11 @@ var ItemEditor = React.createClass({
         e.stopPropagation();
         return false;
     },
-    componentDidMount: function() {
-        $(".ItemEditor2 .item-editor-dialog").on("show.bs.modal", function(e) {
-            console.log(e);
-        });
-    },
-    componentDidUpdate: function(newProp, state) {
+    componentDidUpdate: function(oldProp, state) {
         if (this.props.visible) {
-            $(".item-editor-dialog").modal({ show: true });
+            $('.item-editor-dialog').modal('show');
         } else {
-            $(".item-editor-dialog").modal({ show: false });
+            $('.item-editor-dialog').modal('hide');
         }
     },
     render: function() {
@@ -195,7 +190,7 @@ var ItemList = React.createClass({
     render: function() {
         var items = this.props.items.map(function(item) {
             return (
-                <li>
+                <li key={"item-list_" + item.id}>
                     <Item key={"item_" + item.id} data={item} />
                 </li>
             );
@@ -214,6 +209,20 @@ var ItemList = React.createClass({
         );
     }
 });
+
+var getAllItems = function(successHandler) {
+    $.ajax({
+        url: "/items/",
+        type: "get",
+        success: function(response) {
+            successHandler(response);
+        }.bind(this),
+
+        fail: function() {
+            console.log(arguments);
+        }
+    });
+};
 
 var Page = React.createClass({
     getInitialState: function() {
@@ -264,20 +273,6 @@ var Page = React.createClass({
         )
     }
 });
-
-var getAllItems = function(successHandler) {
-    $.ajax({
-        url: "/items/",
-        type: "get",
-        success: function(response) {
-            successHandler(response);
-        }.bind(this),
-
-        fail: function() {
-            console.log(arguments);
-        }
-    });
-};
 
 React.render(
     <Page />,

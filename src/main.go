@@ -22,6 +22,7 @@ func main() {
     goji.Get("/items/", handler.GetAllItems)
     goji.Post("/items/", handler.RegisterItem)
     goji.Post("/items/:itemId", handler.RegisterItem)
+    goji.Get("/items/:itemId", handler.GetItemById)
 
     // 静的リソース
     goji.Get("/css/*", assets.ContentTypeHandler("text/css"))

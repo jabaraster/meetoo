@@ -43,5 +43,20 @@ func InsertItem(name string, description string, imageDataUrl string) {
     }
 }
 
-func UpdateItem(itemId string, name string, description string, imageDataUrl string) {
+func UpdateItem(itemId int64, name string, description string, imageDataUrl string) {
 }
+
+func GetItemById(itemId int64) *Item {
+    var result []Item
+    if err := db.Select(&result, db.Where("id", "=", itemId)); err != nil {
+        panic(err)
+    }
+    switch (len(result)) {
+    case 0:
+        return nil
+    case 1:
+        return &result[0]
+    }
+    panic(itemId)
+}
+

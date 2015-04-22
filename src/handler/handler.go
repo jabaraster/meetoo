@@ -1,6 +1,7 @@
 package handler
 
 import (
+    "strconv"
     "net/http"
 
     "github.com/zenazn/goji/web"
@@ -14,16 +15,51 @@ func GetAllItems(w http.ResponseWriter, r *http.Request) {
     webutil.WriteJsonResponse(w, menus)
 }
 
+func GetItemById(c web.C, w http.ResponseWriter, r *http.Request) {
+    itemIdStr := c.URLParams["itemId"]
+    if len(itemIdStr) == 0 {
+        http.NotFound(w, r)
+        return
+    }
+
+    var itemId int64
+    var cnvErr error
+    itemId, cnvErr = strconv.ParseInt(itemIdStr, 10, 32)
+    if cnvErr != nil {
+        http.NotFound(w, r)
+        return
+    }
+
+    item := model.GetItemById(itemId)
+    if item == nil {
+        http.NotFound(w, r)
+        return
+    }
+
+    webutil.WriteJsonResponse(w, item)
+}
+
 func RegisterItem(c web.C, w http.ResponseWriter, r *http.Request) {
-    itemId := c.URLParams["itemId"]
+    itemIdStr := c.URLParams["itemId"]
+
     name := r.FormValue("name")
     desc := r.FormValue("description")
     imageDataUrl := r.FormValue("imageDataUrl")
-    if len(itemId) == 0 {
+
+    if len(itemIdStr) == 0 {
         model.InsertItem(name, desc, imageDataUrl)
         webutil.WriteJsonResponse(w, map[string]interface{}{ "status": "OK", "operation": "INSERT"});
-    } else {
-        model.UpdateItem(itemId, name, desc, imageDataUrl)
-        webutil.WriteJsonResponse(w, map[string]interface{}{ "status": "OK", "operation": "UPDATE"});
+        return
     }
+
+    var itemId int64
+    var cnvErr error
+    itemId, cnvErr = strconv.ParseInt(itemIdStr, 10, 32)
+    if cnvErr != nil {
+        http.NotFound(w, r)
+        return
+    }
+
+    model.UpdateItem(itemId, name, desc, imageDataUrl)
+    webutil.WriteJsonResponse(w, map[string]interface{}{ "status": "OK", "operation": "UPDATE"});
 }
