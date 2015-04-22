@@ -8,19 +8,23 @@ var ItemEditor = React.createClass({displayName: "ItemEditor",
         return {
             id: this.props.data.id,
             name: this.props.data.name,
-            imageUrl: this.props.data.url,
+            unitPrice: this.props.data.unitPrice,
+            url: this.props.data.url,
             description: this.props.data.description,
 
             indicatorFor: null,
             indicatorActive: false
         };
     },
+    handleCloseClick: function() {
+        if (this.props.onCloseClick) this.props.onCloseClick({});
+    },
     handleFileSelect: function(files) {
         if (files.length === 0) return;
         var fr = new FileReader();
         $(fr).on("load", function(e) {
                 this.setState({
-                    imageUrl: e.target.result,
+                    url: e.target.result,
                     indicatorActive: false,
                 });
         }.bind(this));
@@ -41,20 +45,17 @@ var ItemEditor = React.createClass({displayName: "ItemEditor",
             this.cancel(e);
         }
     },
-    handleCloseClick: function(e) {
-        e.preventDefault();
-        if (this.props.onCloseClick) this.props.onCloseClick({});
-    },
     handleSubmit: function(e) {
         var name = React.findDOMNode(this.refs.name).value;
         var imageDataUrl = $(React.findDOMNode(this.refs.image)).attr("src");
         var desc = React.findDOMNode(this.refs.description).value;
+        var unitPrice = React.findDOMNode(this.refs.unitPrice).value;
         var url = this.state.id ? "/items/" + this.state.id : "/items/";
         this.setState({ indicatorFor: React.findDOMNode(this.refs.form), indicatorActive: true });
         $.ajax({
             url: url,
             type: "post",
-            data: { name: name, imageDataUrl: imageDataUrl, description: desc },
+            data: { name: name, unitPrice: unitPrice, imageDataUrl: imageDataUrl, description: desc },
             success: function(response) {
                 this.setState({ visible: false, indicatorActive: false });
                 if (response.operation === "INSERT") {
@@ -77,7 +78,10 @@ var ItemEditor = React.createClass({displayName: "ItemEditor",
         e.stopPropagation();
         return false;
     },
-    componentDidUpdate: function(oldProp, state) {
+    componentDidUpdate: function(prevProps) {
+        console.log('-----------');
+        console.log(prevProps);
+        console.log(this.props);
         if (this.props.visible) {
             $('.item-editor-dialog').modal('show');
         } else {
@@ -85,14 +89,16 @@ var ItemEditor = React.createClass({displayName: "ItemEditor",
         }
     },
     render: function() {
-        var imageSet = !!this.state.imageUrl;
+        var imageSet = !!this.state.url;
         return (
             React.createElement("div", {className: "ItemEditor"}, 
               React.createElement("div", {className: "item-editor-dialog modal fade"}, 
                 React.createElement("div", {className: "modal-dialog"}, 
                     React.createElement("div", {className: "modal-content"}, 
                       React.createElement("div", {className: "modal-header"}, 
-                        React.createElement("button", {type: "button", className: "close", "data-dismiss": "modal", "aria-label": "Close"}, React.createElement("span", {"aria-hidden": "true"}, "×")), 
+                        React.createElement("button", {className: "close", onClick: this.handleCloseClick, "aria-label": "Close"}, 
+                            React.createElement("span", {"aria-hidden": "true"}, "×")
+                        ), 
                         React.createElement("h4", {className: ".item-editor-dialog-title modal-title"}, "アイテム編集")
                       ), 
                       React.createElement("div", {className: "modal-body"}, 
@@ -105,18 +111,26 @@ var ItemEditor = React.createClass({displayName: "ItemEditor",
                             React.createElement("div", {className: "form-group"}, 
                                 React.createElement("input", {type: "text", 
                                        ref: "name", 
-                                       className: "form-control", 
-                                       defaultValue: this.props.data.name, 
+                                       className: "item-name form-control", 
+                                       defaultValue: this.state.name, 
                                        placeholder: "アイテム名"}
+                                )
+                            ), 
+                            React.createElement("div", {className: "form-group"}, 
+                                React.createElement("input", {type: "number", 
+                                       ref: "unitPrice", 
+                                       className: "form-control", 
+                                       defaultValue: this.state.unitPrice, 
+                                       placeholder: "単価"}
                                 )
                             ), 
                             React.createElement("div", {className: "form-group"}, 
                                 React.createElement("textarea", {className: "item-description form-control", 
                                           ref: "description", 
-                                          placeholder: "説明"}, this.props.data.description)
+                                          placeholder: "説明"}, this.state.description)
                             ), 
                             React.createElement("div", {className: "form-group"}, 
-                                React.createElement("img", {src: imageSet ? this.state.imageUrl : "/img/unset.png", 
+                                React.createElement("img", {src: imageSet ? this.state.url : "/img/unset.png", 
                                      className: "item-image", 
                                      ref: "image"}
                                 ), 
@@ -126,11 +140,10 @@ var ItemEditor = React.createClass({displayName: "ItemEditor",
                                 React.createElement(Indicator, {buttonRef: this.state.indicatorFor, active: this.state.indicatorActive})
                             )
                         )
-
                       ), 
                       React.createElement("div", {className: "modal-footer"}, 
-                        React.createElement("button", {type: "button", className: "item-editor-close-button btn btn-default", "data-dismiss": "modal"}, "Close"), 
-                        React.createElement("button", {type: "button", className: "btn btn-primary", onClick: this.handleSubmit}, "Save changes")
+                        React.createElement("button", {className: "item-editor-close-button btn btn-default", onClick: this.handleCloseClick}, "Close"), 
+                        React.createElement("button", {className: "btn btn-primary", onClick: this.handleSubmit}, "Save changes")
                       )
                     )
                 )
@@ -141,42 +154,27 @@ var ItemEditor = React.createClass({displayName: "ItemEditor",
 });
 
 var Item = React.createClass({displayName: "Item",
-    getInitialState: function() {
-        return {
-            itemName: this.props.data.name,
-            itemDescription: this.props.data.description,
-            imageUrl: this.props.data.url
-        };
+    handleClick: function() {
+        if (this.props.onEditClick) this.props.onEditClick({ data: this.props.data });
     },
-    handleRemoverClick: function() {
-        this.props.onRemoverClick({ data: this.props.data });
+    handleRemoveClick: function() {
+        if (this.props.onRemoveClick) this.props.onRemoveClick({ data: this.props.data });
     },
     render: function() {
         return (
-            React.createElement("div", {className: "Item"}, 
-                React.createElement("hr", null), 
-                React.createElement(TransitionGroup, {transitionName: "transition-rotation"}, 
-                    this.props.editMode ?
-                    React.createElement("button", {key: "remover_" + this.props.editMode, onClick: this.handleRemoverClick, className: "remover btn btn-default btn-lg tool-box-button"}, 
-                        React.createElement("i", {className: "glyphicon glyphicon-minus-sign"})
+            React.createElement("div", {className: "Item", onClick: this.handleClick}, 
+                React.createElement("div", {className: "tool-box"}, 
+                    React.createElement("button", {className: "btn", onClick: this.handleRemoveClick}, 
+                        React.createElement("i", {className: "glyphicon glyphicon-remove-sign"})
                     )
-                    : null
                 ), 
                 React.createElement("fieldset", {className: "fields"}, 
                     React.createElement("legend", null, 
-                        !this.props.editMode ?
-                        React.createElement("span", null, this.state.itemName)
-                        : null, 
-                        this.props.editMode ?
-                        React.createElement("input", {type: "text", ref: "name", className: "item-name", defaultValue: this.state.itemName})
-                        : null
+                        React.createElement("span", null, this.props.data.name)
                     ), 
-                    React.createElement("img", {src: this.state.imageUrl ? this.state.imageUrl : "/img/unset.png", 
-                         className: "item-image", ref: "image", 
-                         onDragOver: this.handleDragOver, 
-                         onDrop: this.handleDrop}
-                    ), 
-                    React.createElement("p", {className: "item-description"}, this.state.itemDescription)
+                    React.createElement("img", {src: this.props.data.url ? this.props.data.url : "/img/unset.png", className: "item-image"}), 
+                    React.createElement("span", {className: "item-unit-price"}, "単価：", this.props.data.unitPrice, "円"), 
+                    React.createElement("p", {className: "item-description"}, this.props.data.description)
                 )
             )
         );
@@ -187,11 +185,20 @@ var ItemList = React.createClass({displayName: "ItemList",
     handleAddClick: function() {
         if (this.props.onAddClick) this.props.onAddClick();
     },
+    handleItemEditClick: function(e) {
+        if (this.props.onItemEditClick) this.props.onItemEditClick(e);
+    },
+    handleItemRemoveClick: function(e) {
+        if (this.props.onItemRemoveClick) this.props.onItemRemoveClick(e);
+    },
     render: function() {
         var items = this.props.items.map(function(item) {
             return (
                 React.createElement("li", {key: "item-list_" + item.id}, 
-                    React.createElement(Item, {key: "item_" + item.id, data: item})
+                    React.createElement(Item, {key: "item_" + item.id, data: item, 
+                          onEditClick: this.handleItemEditClick, 
+                          onRemoveClick: this.handleItemRemoveClick}
+                    )
                 )
             );
         }.bind(this));
@@ -210,21 +217,22 @@ var ItemList = React.createClass({displayName: "ItemList",
     }
 });
 
-var getAllItems = function(successHandler) {
-    $.ajax({
-        url: "/items/",
-        type: "get",
-        success: function(response) {
-            successHandler(response);
-        }.bind(this),
-
-        fail: function() {
-            console.log(arguments);
-        }
-    });
-};
-
 var Page = React.createClass({displayName: "Page",
+    statics: {
+        getAllItems: function(successHandler) {
+            $.ajax({
+                url: "/items/",
+                type: "get",
+                success: function(response) {
+                    successHandler(response);
+                }.bind(this),
+
+                fail: function() {
+                    console.log(arguments);
+                }
+            });
+        }
+    },
     getInitialState: function() {
         return {
             items: [],
@@ -234,23 +242,51 @@ var Page = React.createClass({displayName: "Page",
         };
     },
     componentDidMount: function() {
-        getAllItems(function(response) {
+        Page.getAllItems(function(response) {
             this.setState({ items: response });
         }.bind(this));
     },
     handleAddClick: function() {
-        this.setState({ editorVisible: true });
+        this.setState({ editorVisible: true, editorData: {} });
+    },
+    handleItemEditClick: function(e) {
+        this.setState({ editorVisible: true, editorData: e.data });
+    },
+    handleItemRemoveClick: function(e) {
+        if (!confirm('本当に削除しますか？')) {
+            this.setState({ editorVisible: false });
+            return;
+        }
+        var removeTarget;
+        var newItems = [];
+        this.state.items.forEach(function(item) {
+            if (e.data.id !== item.id) {
+                newItems.push(item);
+            } else {
+                removeTarget = item;
+            }
+        });
+        $.ajax({
+            url: '/items/' + removeTarget.id + '/remove',
+            type: 'post',
+            fail: function() {
+                console.log(arguments);
+            },
+            complete: function() {
+                this.setState({ items: newItems, editorVisible: false });
+            }.bind(this)
+        });
     },
     handleEditorCloseClick: function() {
         this.setState({ editorData: {}, editorVisible: false });
     },
     handleInsert: function() {
-        getAllItems(function(response) {
+        Page.getAllItems(function(response) {
             this.setState({ items: response, editorData: {}, editorVisible: false });
         }.bind(this));
     },
     handleUpdate: function() {
-        getAllItems(function(response) {
+        Page.getAllItems(function(response) {
             this.setState({ items: response, editorData: {}, editorVisible: false });
         }.bind(this));
     },
@@ -261,7 +297,11 @@ var Page = React.createClass({displayName: "Page",
                     React.createElement("div", {className: "col-md-3"}, 
                         "メニュー"
                     ), 
-                    React.createElement(ItemList, {items: this.state.items, onAddClick: this.handleAddClick})
+                    React.createElement(ItemList, {items: this.state.items, 
+                              onAddClick: this.handleAddClick, 
+                              onItemEditClick: this.handleItemEditClick, 
+                              onItemRemoveClick: this.handleItemRemoveClick}
+                    )
                 ), 
                 React.createElement(ItemEditor, {data: this.state.editorData, 
                             visible: this.state.editorVisible, 
@@ -271,7 +311,7 @@ var Page = React.createClass({displayName: "Page",
                 )
             )
         )
-    }
+    },
 });
 
 React.render(

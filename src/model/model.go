@@ -17,6 +17,15 @@ var (
     db *genmai.DB
 )
 
+type DuplicateError struct {
+    ColumnName string
+    ColumnValue interface{}
+}
+
+func NewDuplicateError(columnName string, columnValue interface{}) *DuplicateError {
+    return &DuplicateError{ColumnName: columnName, ColumnValue: columnValue}
+}
+
 func init() {
     var err error
     db, err = createDb()

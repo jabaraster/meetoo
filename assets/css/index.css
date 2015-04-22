@@ -7,18 +7,32 @@
 .tool-box-button {
   border: none;
 }
+.ItemEditor .item-name {
+  font-size: 150%;
+}
 .ItemEditor .item-image {
   max-width: 400px;
 }
 .Item {
   padding: 6px;
   border-radius: 6px;
+  position: relative;
 }
-.Item .remover {
-  color: red;
+.Item .tool-box {
+  position: absolute;
+  right: 5px;
+}
+.Item .tool-box .btn {
+  display: none;
+  background: none;
+  border: none;
 }
 .Item .fields {
   display: inline-block;
+}
+.Item .item-unit-price {
+  margin-left: 20px;
+  font-size: 120%;
 }
 .Item .item-image {
   width: 200px;
@@ -49,4 +63,7 @@
 .Item:hover {
   cursor: pointer;
   background: rgba(255, 230, 230, 0.6);
+}
+.Item:hover .tool-box .btn {
+  display: inline;
 }
