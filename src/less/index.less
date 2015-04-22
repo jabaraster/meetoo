@@ -20,8 +20,12 @@
 
 .Item {
     padding: 6px;
-    border-radius: 6px;
+    padding-left: 10px;
+    border-radius: 0px;
     position: relative;
+    box-shadow: 1px 1px 2px 0px rgba(0,0,0,0.4);
+    margin-top: 3px;
+    margin-bottom: 6px;
 
     .tool-box {
         position: absolute;
@@ -34,18 +38,24 @@
     }
 
     .fields {
+        width: 100%;
+    }
+    legend {
+        width: 100%;
+    }
+    .item-name {
         display: inline-block;
+        margin-bottom: 2px;
+        width: 70%;
     }
     .item-unit-price {
-        margin-left: 20px;
-        font-size: 120%;
+        width: 30%;
+        margin-right: 50px;
+        font-size: 70%;
     }
     .item-image {
         width: 200px;
         min-height: 100px;
-    }
-    .item-name {
-        margin-bottom: 2px;
     }
     .item-description {
         margin: 10px;

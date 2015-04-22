@@ -25,6 +25,9 @@ var ItemEditor = React.createClass({displayName: "ItemEditor",
     handleUnitPriceChange: function(e) {
         this.setState({ unitPrice: e.target.value });
     },
+    handleDescriptionChange: function(e) {
+        this.setState({ description: e.target.value });
+    },
     handleFileSelect: function(files) {
         if (files.length === 0) return;
         var fr = new FileReader();
@@ -53,9 +56,9 @@ var ItemEditor = React.createClass({displayName: "ItemEditor",
     },
     handleSubmit: function(e) {
         var name = React.findDOMNode(this.refs.name).value;
+        var unitPrice = React.findDOMNode(this.refs.unitPrice).value;
         var imageDataUrl = $(React.findDOMNode(this.refs.image)).attr("src");
         var desc = React.findDOMNode(this.refs.description).value;
-        var unitPrice = React.findDOMNode(this.refs.unitPrice).value;
         var url = this.state.id ? "/items/" + this.state.id : "/items/";
         this.setState({ indicatorFor: React.findDOMNode(this.refs.form), indicatorActive: true });
         $.ajax({
@@ -103,6 +106,7 @@ var ItemEditor = React.createClass({displayName: "ItemEditor",
     },
     render: function() {
         var imageSet = !!this.state.url;
+        console.log(this.state.description);
         return (
             React.createElement("div", {className: "ItemEditor"}, 
               React.createElement("div", {className: "item-editor-dialog modal fade"}, 
@@ -142,7 +146,10 @@ var ItemEditor = React.createClass({displayName: "ItemEditor",
                             React.createElement("div", {className: "form-group"}, 
                                 React.createElement("textarea", {className: "item-description form-control", 
                                           ref: "description", 
-                                          placeholder: "説明"}, this.state.description)
+                                          placeholder: "説明", 
+                                          onChange: this.handleDescriptionChange, 
+                                          value: this.state.description}
+                                )
                             ), 
                             React.createElement("div", {className: "form-group"}, 
                                 React.createElement("img", {src: imageSet ? this.state.url : "/img/unset.png", 
@@ -191,10 +198,10 @@ var Item = React.createClass({displayName: "Item",
                 ), 
                 React.createElement("fieldset", {className: "fields"}, 
                     React.createElement("legend", null, 
-                        React.createElement("span", null, this.props.data.name)
+                        React.createElement("span", {className: "item-name"}, this.props.data.name), 
+                        React.createElement("span", {className: "item-unit-price"}, "単価：", this.props.data.unitPrice, "円")
                     ), 
                     React.createElement("img", {src: this.props.data.url ? this.props.data.url : "/img/unset.png", className: "item-image"}), 
-                    React.createElement("span", {className: "item-unit-price"}, "単価：", this.props.data.unitPrice, "円"), 
                     React.createElement("p", {className: "item-description"}, this.props.data.description)
                 )
             )
