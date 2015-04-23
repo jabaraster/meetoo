@@ -12,6 +12,8 @@ var ItemEditor = React.createClass({
             description: this.props.data.description,
             url: this.props.data.url,
 
+            messageVisible: false,
+            messageText: '',
             indicatorFor: null,
             indicatorActive: false
         };
@@ -66,6 +68,14 @@ var ItemEditor = React.createClass({
             type: "post",
             data: { name: name, unitPrice: unitPrice, imageDataUrl: imageDataUrl, description: desc },
             success: function(response) {
+                if (response.status !== 'OK') {
+                    this.setState({
+                        messageVisible: true,
+                        messageText: response.message,
+                        indicatorActive: false
+                    });
+                    return;
+                }
                 this.setState({ visible: false, indicatorActive: false });
                 if (response.operation === "INSERT") {
                     if (this.props.onInsert) this.props.onInsert({});
@@ -106,10 +116,10 @@ var ItemEditor = React.createClass({
     },
     render: function() {
         var imageSet = !!this.state.url;
-        console.log(this.state.description);
         return (
             <div className="ItemEditor">
               <div className="item-editor-dialog modal fade">
+                <Message visible={this.state.messageVisible} text={this.state.messageText} />
                 <div className="modal-dialog">
                     <div className="modal-content">
                       <div className="modal-header">
@@ -165,8 +175,14 @@ var ItemEditor = React.createClass({
 
                       </div>
                       <div className="modal-footer">
-                        <button className="item-editor-close-button btn btn-default" onClick={this.handleCloseClick}>Close</button>
-                        <button className="btn btn-primary" onClick={this.handleSubmit}>Save changes</button>
+                        <button className="item-editor-close-button btn btn-default" onClick={this.handleCloseClick}>
+                            <i className="glyphicon glyphicon-remove" />
+                            キャンセル
+                        </button>
+                        <button className="btn btn-primary" onClick={this.handleSubmit}>
+                            <i className="glyphicon glyphicon-ok" />
+                            変更を保存
+                        </button>
                       </div>
                     </div>
                 </div>

@@ -12,6 +12,8 @@ var ItemEditor = React.createClass({displayName: "ItemEditor",
             description: this.props.data.description,
             url: this.props.data.url,
 
+            messageVisible: false,
+            messageText: '',
             indicatorFor: null,
             indicatorActive: false
         };
@@ -66,6 +68,14 @@ var ItemEditor = React.createClass({displayName: "ItemEditor",
             type: "post",
             data: { name: name, unitPrice: unitPrice, imageDataUrl: imageDataUrl, description: desc },
             success: function(response) {
+                if (response.status !== 'OK') {
+                    this.setState({
+                        messageVisible: true,
+                        messageText: response.message,
+                        indicatorActive: false
+                    });
+                    return;
+                }
                 this.setState({ visible: false, indicatorActive: false });
                 if (response.operation === "INSERT") {
                     if (this.props.onInsert) this.props.onInsert({});
@@ -106,10 +116,10 @@ var ItemEditor = React.createClass({displayName: "ItemEditor",
     },
     render: function() {
         var imageSet = !!this.state.url;
-        console.log(this.state.description);
         return (
             React.createElement("div", {className: "ItemEditor"}, 
               React.createElement("div", {className: "item-editor-dialog modal fade"}, 
+                React.createElement(Message, {visible: this.state.messageVisible, text: this.state.messageText}), 
                 React.createElement("div", {className: "modal-dialog"}, 
                     React.createElement("div", {className: "modal-content"}, 
                       React.createElement("div", {className: "modal-header"}, 
@@ -165,8 +175,14 @@ var ItemEditor = React.createClass({displayName: "ItemEditor",
 
                       ), 
                       React.createElement("div", {className: "modal-footer"}, 
-                        React.createElement("button", {className: "item-editor-close-button btn btn-default", onClick: this.handleCloseClick}, "Close"), 
-                        React.createElement("button", {className: "btn btn-primary", onClick: this.handleSubmit}, "Save changes")
+                        React.createElement("button", {className: "item-editor-close-button btn btn-default", onClick: this.handleCloseClick}, 
+                            React.createElement("i", {className: "glyphicon glyphicon-remove"}), 
+                            "キャンセル"
+                        ), 
+                        React.createElement("button", {className: "btn btn-primary", onClick: this.handleSubmit}, 
+                            React.createElement("i", {className: "glyphicon glyphicon-ok"}), 
+                            "変更を保存"
+                        )
                       )
                     )
                 )

@@ -67,8 +67,12 @@ func RegisterItem(c web.C, w http.ResponseWriter, r *http.Request) {
     imageDataUrl := r.FormValue("imageDataUrl")
 
     if len(itemIdStr) == 0 {
-        model.InsertItem(name, unitPrice, &desc, &imageDataUrl)
-        webutil.WriteJsonResponse(w, map[string]interface{}{ "status": "OK", "operation": "INSERT"});
+        _, dup := model.InsertItem(name, unitPrice, &desc, &imageDataUrl)
+        if dup != nil {
+            webutil.WriteJsonResponse(w, map[string]interface{}{ "status": "NG", "operation": "INSERT", "message": "アイテム名が重複しています。" });
+        } else {
+            webutil.WriteJsonResponse(w, map[string]interface{}{ "status": "OK", "operation": "INSERT" });
+        }
         return
     }
 
@@ -79,6 +83,10 @@ func RegisterItem(c web.C, w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    model.UpdateItem(itemId, name, unitPrice, &desc, &imageDataUrl)
-    webutil.WriteJsonResponse(w, map[string]interface{}{ "status": "OK", "operation": "UPDATE"});
+    _, dup := model.UpdateItem(itemId, name, unitPrice, &desc, &imageDataUrl)
+    if dup != nil {
+        webutil.WriteJsonResponse(w, map[string]interface{}{ "status": "NG", "operation": "UPDATE", "message": "アイテム名が重複しています。" });
+    } else {
+        webutil.WriteJsonResponse(w, map[string]interface{}{ "status": "OK", "operation": "UPDATE" });
+    }
 }
