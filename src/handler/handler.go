@@ -85,8 +85,20 @@ func RegisterItem(c web.C, w http.ResponseWriter, r *http.Request) {
 
     _, dup := model.UpdateItem(itemId, name, unitPrice, &desc, &imageDataUrl)
     if dup != nil {
-        webutil.WriteJsonResponse(w, map[string]interface{}{ "status": "NG", "operation": "UPDATE", "message": "アイテム名が重複しています。" });
+        webutil.WriteJsonResponse(w, map[string]interface{}{ "status": "NG", "operation": "UPDATE", "message": "アイテム名が重複しています。" })
     } else {
-        webutil.WriteJsonResponse(w, map[string]interface{}{ "status": "OK", "operation": "UPDATE" });
+        webutil.WriteJsonResponse(w, map[string]interface{}{ "status": "OK", "operation": "UPDATE" })
     }
+}
+
+func GetAllCategories(w http.ResponseWriter, r *http.Request) {
+    webutil.WriteJsonResponse(w, []map[string]string {
+        map[string]string{ "icon": "ok", "id": "hall", "label": "会館" },
+    })
+}
+
+func GetAllHalls(w http.ResponseWriter, r *http.Request) {
+    webutil.WriteJsonResponse(w, []map[string]string {
+        map[string]string{ "id": "hall-A", "label": "会館A" },
+    })
 }

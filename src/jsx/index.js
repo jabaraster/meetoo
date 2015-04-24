@@ -340,6 +340,7 @@ var Page = React.createClass({
                 <div className="row">
                     <div className="col-md-3">
                         メニュー
+                        <Menu />
                     </div>
                     <ItemList items={this.state.items}
                               onAddClick={this.handleAddClick}
@@ -356,6 +357,76 @@ var Page = React.createClass({
             </div>
         )
     },
+});
+
+var MenuItem = React.createClass({
+    render: function() {
+        return (
+            <li className="MenuItem">
+                <a href="#">
+                    <i className={"glyphicon glyphicon-" + this.props.icon} />
+                    {this.props.label}
+                </a>
+            </li>
+        );
+    }
+});
+
+var Menu = React.createClass({
+    getInitialState: function() {
+        return {
+            categories: [],
+            halls: []
+        };
+    },
+    componentDidMount: function() {
+        $.ajax({
+            url: '/categories/',
+            type: 'get',
+            success: function(data) {
+                console.log(data);
+                this.setState({ categories: data });
+            }.bind(this),
+            fail: function() {
+                console.log(arguments);
+            },
+            complete: function() {}
+        });
+        $.ajax({
+            url: '/halls/',
+            type: 'get',
+            success: function(data) {
+                this.setState({ halls: data });
+            }.bind(this),
+            fail: function() {
+                console.log(arguments);
+            },
+            complete: function() {}
+        });
+    },
+    render: function() {
+        var menuGenerator = function(data) {
+            return ( <MenuItem label={data.label} icon={data.icon} /> );
+        };
+        var categoryMenus = this.state.categories.map(menuGenerator);
+        var hallMenus = this.state.halls.map(menuGenerator);
+        return (
+            <div className="Menu">
+                <div className="category-menu">
+                    <h4>カテゴリ</h4>
+                    <ul>
+                        {categoryMenus}
+                    </ul>
+                </div>
+                <div className="hall-menu">
+                    <h4>会館</h4>
+                    <ul>
+                        {hallMenus}
+                    </ul>
+                </div>
+            </div>
+        );
+    }
 });
 
 React.render(

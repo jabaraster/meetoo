@@ -339,7 +339,8 @@ var Page = React.createClass({displayName: "Page",
             React.createElement("div", {className: "Page container"}, 
                 React.createElement("div", {className: "row"}, 
                     React.createElement("div", {className: "col-md-3"}, 
-                        "メニュー"
+                        "メニュー", 
+                        React.createElement(Menu, null)
                     ), 
                     React.createElement(ItemList, {items: this.state.items, 
                               onAddClick: this.handleAddClick, 
@@ -356,6 +357,76 @@ var Page = React.createClass({displayName: "Page",
             )
         )
     },
+});
+
+var MenuItem = React.createClass({displayName: "MenuItem",
+    render: function() {
+        return (
+            React.createElement("li", {className: "MenuItem"}, 
+                React.createElement("a", {href: "#"}, 
+                    React.createElement("i", {className: "glyphicon glyphicon-" + this.props.icon}), 
+                    this.props.label
+                )
+            )
+        );
+    }
+});
+
+var Menu = React.createClass({displayName: "Menu",
+    getInitialState: function() {
+        return {
+            categories: [],
+            halls: []
+        };
+    },
+    componentDidMount: function() {
+        $.ajax({
+            url: '/categories/',
+            type: 'get',
+            success: function(data) {
+                console.log(data);
+                this.setState({ categories: data });
+            }.bind(this),
+            fail: function() {
+                console.log(arguments);
+            },
+            complete: function() {}
+        });
+        $.ajax({
+            url: '/halls/',
+            type: 'get',
+            success: function(data) {
+                this.setState({ halls: data });
+            }.bind(this),
+            fail: function() {
+                console.log(arguments);
+            },
+            complete: function() {}
+        });
+    },
+    render: function() {
+        var menuGenerator = function(data) {
+            return ( React.createElement(MenuItem, {label: data.label, icon: data.icon}) );
+        };
+        var categoryMenus = this.state.categories.map(menuGenerator);
+        var hallMenus = this.state.halls.map(menuGenerator);
+        return (
+            React.createElement("div", {className: "Menu"}, 
+                React.createElement("div", {className: "category-menu"}, 
+                    React.createElement("h4", null, "カテゴリ"), 
+                    React.createElement("ul", null, 
+                        categoryMenus
+                    )
+                ), 
+                React.createElement("div", {className: "hall-menu"}, 
+                    React.createElement("h4", null, "会館"), 
+                    React.createElement("ul", null, 
+                        hallMenus
+                    )
+                )
+            )
+        );
+    }
 });
 
 React.render(

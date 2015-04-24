@@ -25,6 +25,9 @@ func main() {
     goji.Post("/items/:itemId", handler.RegisterItem)
     goji.Post("/items/:itemId/remove", handler.RemoveItem)
 
+    goji.Get("/categories/", handler.GetAllCategories)
+    goji.Get("/halls/", handler.GetAllHalls)
+
     // 静的リソース
     goji.Get("/css/*", assets.ContentTypeHandler("text/css"))
     goji.Get("/js/*", assets.ContentTypeHandler("text/javascript"))
