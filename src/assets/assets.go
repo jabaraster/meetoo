@@ -126,6 +126,10 @@ func (h *contentTypeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
     }
 }
 
+func GetData(path string) ([]byte, error) {
+    return getData(path)
+}
+
 func getData(path string) ([]byte, error) {
     if env.IsProductionMode() {
         return bindata.Asset("assets/" + path)

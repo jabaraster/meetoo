@@ -17,13 +17,33 @@ var (
     db *genmai.DB
 )
 
-type DuplicateError struct {
-    ColumnName string
-    ColumnValue interface{}
+type Duplicate interface {
+    ColumnName() string
+    ColumnValue() interface{}
 }
 
-func NewDuplicateError(columnName string, columnValue interface{}) *DuplicateError {
-    return &DuplicateError{ColumnName: columnName, ColumnValue: columnValue}
+type duplicate struct {
+    columnName string
+    columnValue interface{}
+}
+func (e *duplicate) ColumnName() string {
+    return e.columnName
+}
+func (e *duplicate) ColumnValue() interface{} {
+    return e.columnValue
+}
+
+func NewDuplicate(columnName string, columnValue interface{}) Duplicate {
+    return &duplicate{columnName: columnName, columnValue: columnValue}
+}
+
+type NotFound interface {
+}
+type notFound struct {
+}
+
+func NewNotFound() NotFound {
+    return &notFound{}
 }
 
 func init() {
@@ -32,8 +52,13 @@ func init() {
     if err != nil {
         panic(err)
     }
+
     db.SetLogOutput(os.Stdout)
+
     if err := db.CreateTableIfNotExists(&Item{}); err != nil {
+        panic(err)
+    }
+    if err := db.CreateTableIfNotExists(&ItemImage{}); err != nil {
         panic(err)
     }
 
@@ -50,11 +75,24 @@ func createDb() (*genmai.DB, error) {
     panic(env.DbKind())
 }
 
+func tx() {
+    if err := recover(); err != nil {
+        db.Rollback()
+    } else {
+        db.Commit()
+    }
+}
+
+func beginTx() {
+    if err := db.Begin(); err != nil {
+        panic(err)
+    }
+}
+
 func insertTestData() {
     rand.Seed(time.Now().UnixNano())
     var desc = "これはアイテムの説明文です。"
-    var url  = "/img/ff.png"
-    if _, err := db.Insert(&Item{Name: fmt.Sprintf("%d", rand.Int31n(9999)), Description: &desc, Url: &url}); err != nil {
+    if _, err := db.Insert(&Item{Name: fmt.Sprintf("%d", rand.Int31n(9999)), Description: &desc}); err != nil {
         panic(err)
     }
 }

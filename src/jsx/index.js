@@ -6,11 +6,11 @@ var TransitionGroup = React.addons.CSSTransitionGroup;
 var ItemEditor = React.createClass({
     getInitialState: function() {
         return {
-            id: this.props.id,
+            id: this.props.data.id,
             name: this.props.data.name,
             unitPrice: this.props.data.unitPrice,
             description: this.props.data.description,
-            url: this.props.data.url,
+            url: this.props.data.id ? '/items/' + this.props.data.id + '___' + this.props.data.imageTimestamp + '/image' : '/img/unset.png',
 
             messageVisible: false,
             messageText: '',
@@ -60,6 +60,9 @@ var ItemEditor = React.createClass({
         var name = React.findDOMNode(this.refs.name).value;
         var unitPrice = React.findDOMNode(this.refs.unitPrice).value;
         var imageDataUrl = $(React.findDOMNode(this.refs.image)).attr("src");
+        if (imageDataUrl.indexOf('data:') !== 0) {
+            imageDataUrl = 'noop';
+        }
         var desc = React.findDOMNode(this.refs.description).value;
         var url = this.state.id ? "/items/" + this.state.id : "/items/";
         this.setState({ indicatorFor: React.findDOMNode(this.refs.form), indicatorActive: true });
@@ -104,7 +107,7 @@ var ItemEditor = React.createClass({
                 name: this.props.data.name,
                 unitPrice: this.props.data.unitPrice,
                 description: this.props.data.description,
-                url: this.props.data.url,
+                url: this.props.data.id ? '/items/' + this.props.data.id + '___' + this.props.data.imageTimestamp + '/image' : '/img/unset.png',
             });
         }
 
@@ -162,7 +165,7 @@ var ItemEditor = React.createClass({
                                 />
                             </div>
                             <div className="form-group">
-                                <img src={imageSet ? this.state.url : "/img/unset.png"}
+                                <img src={this.state.url}
                                      className="item-image"
                                      ref="image"
                                 />
@@ -205,9 +208,18 @@ var Item = React.createClass({
         }
     },
     render: function() {
+        var imageUrl;
+        if (this.props.data.id) {
+            imageUrl = '/items/' + this.props.data.id + '___' + this.props.data.imageTimestamp + '/image';
+        } else {
+            imageUrl = '/img/unset.png';
+        }
         return (
-            <div className="Item" onClick={this.handleClick}>
+            <div className="Item">
                 <div className="tool-box">
+                    <button className="btn" onClick={this.handleClick}>
+                        <i className="glyphicon glyphicon-pencil" />
+                    </button>
                     <button className="btn" onClick={this.handleRemoveClick}>
                         <i className="glyphicon glyphicon-remove-sign" />
                     </button>
@@ -217,7 +229,7 @@ var Item = React.createClass({
                         <span className="item-name">{this.props.data.name}</span>
                         <span className="item-unit-price">単価：{this.props.data.unitPrice}円</span>
                     </legend>
-                    <img src={this.props.data.url ? this.props.data.url : "/img/unset.png"} className="item-image" />
+                    <img src={imageUrl} className="item-image" />
                     <p className="item-description">{this.props.data.description}</p>
                 </fieldset>
             </div>
@@ -239,7 +251,8 @@ var ItemList = React.createClass({
         var items = this.props.items.map(function(item) {
             return (
                 <li key={"item-list_" + item.id}>
-                    <Item key={"item_" + item.id} data={item}
+                    <Item key={"item_" + item.id}
+                          data={item}
                           onEditClick={this.handleItemEditClick}
                           onRemoveClick={this.handleItemRemoveClick}
                     />
@@ -337,17 +350,12 @@ var Page = React.createClass({
     render: function() {
         return (
             <div className="Page container">
-                <div className="row">
-                    <div className="col-md-3">
-                        メニュー
-                        <Menu />
-                    </div>
-                    <ItemList items={this.state.items}
-                              onAddClick={this.handleAddClick}
-                              onItemEditClick={this.handleItemEditClick}
-                              onItemRemoveClick={this.handleItemRemoveClick}
-                    />
-                </div>
+                <Menu />
+                <ItemList items={this.state.items}
+                          onAddClick={this.handleAddClick}
+                          onItemEditClick={this.handleItemEditClick}
+                          onItemRemoveClick={this.handleItemRemoveClick}
+                />
                 <ItemEditor data={this.state.editorData}
                             visible={this.state.editorVisible}
                             onCloseClick={this.handleEditorCloseClick}
@@ -361,11 +369,14 @@ var Page = React.createClass({
 
 var MenuItem = React.createClass({
     render: function() {
+        var classes = React.addons.classSet({
+            glyphicon: true,
+        });
         return (
             <li className="MenuItem">
                 <a href="#">
                     <i className={"glyphicon glyphicon-" + this.props.icon} />
-                    {this.props.label}
+                    <span className="icon-label">{this.props.label}</span>
                 </a>
             </li>
         );
@@ -384,7 +395,7 @@ var Menu = React.createClass({
             url: '/categories/',
             type: 'get',
             success: function(data) {
-                console.log(data);
+                data.push({ id: "add-category", icon: "plus" });
                 this.setState({ categories: data });
             }.bind(this),
             fail: function() {
@@ -396,6 +407,7 @@ var Menu = React.createClass({
             url: '/halls/',
             type: 'get',
             success: function(data) {
+                data.push({ id: "add-hall", icon: "plus" });
                 this.setState({ halls: data });
             }.bind(this),
             fail: function() {
@@ -406,25 +418,38 @@ var Menu = React.createClass({
     },
     render: function() {
         var menuGenerator = function(data) {
-            return ( <MenuItem label={data.label} icon={data.icon} /> );
+            return ( <MenuItem id={data.id} label={data.label} icon={data.icon} /> );
         };
         var categoryMenus = this.state.categories.map(menuGenerator);
         var hallMenus = this.state.halls.map(menuGenerator);
         return (
-            <div className="Menu">
-                <div className="category-menu">
-                    <h4>カテゴリ</h4>
-                    <ul>
-                        {categoryMenus}
+            <nav className="navbar navbar-inverse">
+                <div className="container">
+                    <div className="navbar-header">
+                        <a className="navbar-brand">見積ツール meetoo</a>
+                    </div>
+                    <ul className="nav navbar-nav navbar-left">
+                        <li className="dropdown">
+                            <a href="#" className="dropdown-toggle" data-toggle="dropdown">
+                                カテゴリ<span className="caret"></span>
+                            </a>
+                            <ul className="dropdown-menu">
+                                {categoryMenus}
+                            </ul>
+                        </li>
+                    </ul>
+                    <ul className="nav navbar-nav navbar-left">
+                        <li className="dropdown">
+                            <a href="#" className="dropdown-toggle" data-toggle="dropdown">
+                                会館<span className="caret"></span>
+                            </a>
+                            <ul className="dropdown-menu">
+                                {hallMenus}
+                            </ul>
+                        </li>
                     </ul>
                 </div>
-                <div className="hall-menu">
-                    <h4>会館</h4>
-                    <ul>
-                        {hallMenus}
-                    </ul>
-                </div>
-            </div>
+            </nav>
         );
     }
 });

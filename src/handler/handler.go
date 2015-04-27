@@ -2,18 +2,55 @@ package handler
 
 import (
     "strconv"
+    "time"
+    "strings"
     "net/http"
 
     "github.com/zenazn/goji/web"
 
+    "../assets"
     "../model"
     "../webutil"
     "../util"
 )
 
+func findImage(item model.Item, images []model.ItemImage) *model.ItemImage {
+    for _, image := range images {
+        if item.Id == image.ItemId {
+            return &image
+        }
+    }
+    return nil
+}
+
 func GetAllItems(w http.ResponseWriter, r *http.Request) {
-    menus := model.GetAllItems()
-    webutil.WriteJsonResponse(w, menus)
+    items := model.GetAllItems()
+    images := model.GetItemImagesByItems(items)
+    var res []map[string]interface{}
+    for _, item := range items {
+        image := findImage(item, images)
+        var imageTimestamp *int64
+        if image == nil {
+            imageTimestamp = nil
+        } else {
+            base := time.Date(1900, time.January, 1, 0, 0, 0, 0, time.UTC)
+            i := image.Created.Sub(base).Nanoseconds()
+            imageTimestamp = &i
+        }
+        res = append(res, map[string]interface{}{
+            "id": item.Id,
+            "name": item.Name,
+            "unitPrice": item.UnitPrice,
+            "description": item.Description,
+            "imageTimestamp": imageTimestamp,
+        });
+    }
+
+    if len(res) == 0 {
+        webutil.WriteJsonResponse(w, []interface{}{})
+    } else {
+        webutil.WriteJsonResponse(w, res)
+    }
 }
 
 func GetItemById(c web.C, w http.ResponseWriter, r *http.Request) {
@@ -38,6 +75,37 @@ func GetItemById(c web.C, w http.ResponseWriter, r *http.Request) {
     }
 
     webutil.WriteJsonResponse(w, item)
+}
+
+func GetItemImageByItemId(c web.C, w http.ResponseWriter, r *http.Request) {
+    itemIdWithTimestamp := c.URLParams["itemIdWithTimestamp"]
+
+    tokens := strings.Split(itemIdWithTimestamp, "___")
+    if len(tokens) < 1 {
+        http.NotFound(w, r)
+        return
+    }
+    itemIdStr := tokens[0]
+
+    var itemId int64
+    var cnvErr error
+    itemId, cnvErr = strconv.ParseInt(itemIdStr, 10, 32)
+    if cnvErr != nil {
+        http.NotFound(w, r)
+        return
+    }
+
+    image, notFound := model.GetItemImageByItemId(itemId)
+    if notFound != nil {
+        unsetImageData, err := assets.GetData("img/unset.png")
+        if err == nil {
+            w.Header().Add("content-type", "image/png")
+            w.Write(unsetImageData)
+        }
+        return
+    }
+    w.Header().Add("content-type", image.ContentType)
+    w.Write(image.Data)
 }
 
 func RemoveItem(c web.C, w http.ResponseWriter, r *http.Request) {
@@ -93,12 +161,19 @@ func RegisterItem(c web.C, w http.ResponseWriter, r *http.Request) {
 
 func GetAllCategories(w http.ResponseWriter, r *http.Request) {
     webutil.WriteJsonResponse(w, []map[string]string {
-        map[string]string{ "icon": "ok", "id": "hall", "label": "会館" },
+        { "icon": "home", "id": "hall", "label": "会館" },
     })
 }
 
 func GetAllHalls(w http.ResponseWriter, r *http.Request) {
     webutil.WriteJsonResponse(w, []map[string]string {
-        map[string]string{ "id": "hall-A", "label": "会館A" },
+        { "id": "hall-A", "label": "会館A" },
+    })
+}
+
+func CountAllItemImages(w http.ResponseWriter, r *http.Request) {
+    c := model.CountAllItemImages()
+    webutil.WriteJsonResponse(w, []map[string]int64 {
+        { "count": c },
     })
 }

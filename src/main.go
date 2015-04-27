@@ -22,8 +22,10 @@ func main() {
     goji.Get("/items/", handler.GetAllItems)
     goji.Post("/items/", handler.RegisterItem)
     goji.Get("/items/:itemId", handler.GetItemById)
+    goji.Get("/items/:itemIdWithTimestamp/image", handler.GetItemImageByItemId)
     goji.Post("/items/:itemId", handler.RegisterItem)
     goji.Post("/items/:itemId/remove", handler.RemoveItem)
+    goji.Get("/image_count", handler.CountAllItemImages)
 
     goji.Get("/categories/", handler.GetAllCategories)
     goji.Get("/halls/", handler.GetAllHalls)

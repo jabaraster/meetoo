@@ -6,11 +6,11 @@ var TransitionGroup = React.addons.CSSTransitionGroup;
 var ItemEditor = React.createClass({displayName: "ItemEditor",
     getInitialState: function() {
         return {
-            id: this.props.id,
+            id: this.props.data.id,
             name: this.props.data.name,
             unitPrice: this.props.data.unitPrice,
             description: this.props.data.description,
-            url: this.props.data.url,
+            url: this.props.data.id ? '/items/' + this.props.data.id + '___' + this.props.data.imageTimestamp + '/image' : '/img/unset.png',
 
             messageVisible: false,
             messageText: '',
@@ -60,6 +60,9 @@ var ItemEditor = React.createClass({displayName: "ItemEditor",
         var name = React.findDOMNode(this.refs.name).value;
         var unitPrice = React.findDOMNode(this.refs.unitPrice).value;
         var imageDataUrl = $(React.findDOMNode(this.refs.image)).attr("src");
+        if (imageDataUrl.indexOf('data:') !== 0) {
+            imageDataUrl = 'noop';
+        }
         var desc = React.findDOMNode(this.refs.description).value;
         var url = this.state.id ? "/items/" + this.state.id : "/items/";
         this.setState({ indicatorFor: React.findDOMNode(this.refs.form), indicatorActive: true });
@@ -104,7 +107,7 @@ var ItemEditor = React.createClass({displayName: "ItemEditor",
                 name: this.props.data.name,
                 unitPrice: this.props.data.unitPrice,
                 description: this.props.data.description,
-                url: this.props.data.url,
+                url: this.props.data.id ? '/items/' + this.props.data.id + '___' + this.props.data.imageTimestamp + '/image' : '/img/unset.png',
             });
         }
 
@@ -162,7 +165,7 @@ var ItemEditor = React.createClass({displayName: "ItemEditor",
                                 )
                             ), 
                             React.createElement("div", {className: "form-group"}, 
-                                React.createElement("img", {src: imageSet ? this.state.url : "/img/unset.png", 
+                                React.createElement("img", {src: this.state.url, 
                                      className: "item-image", 
                                      ref: "image"}
                                 ), 
@@ -205,9 +208,18 @@ var Item = React.createClass({displayName: "Item",
         }
     },
     render: function() {
+        var imageUrl;
+        if (this.props.data.id) {
+            imageUrl = '/items/' + this.props.data.id + '___' + this.props.data.imageTimestamp + '/image';
+        } else {
+            imageUrl = '/img/unset.png';
+        }
         return (
-            React.createElement("div", {className: "Item", onClick: this.handleClick}, 
+            React.createElement("div", {className: "Item"}, 
                 React.createElement("div", {className: "tool-box"}, 
+                    React.createElement("button", {className: "btn", onClick: this.handleClick}, 
+                        React.createElement("i", {className: "glyphicon glyphicon-pencil"})
+                    ), 
                     React.createElement("button", {className: "btn", onClick: this.handleRemoveClick}, 
                         React.createElement("i", {className: "glyphicon glyphicon-remove-sign"})
                     )
@@ -217,7 +229,7 @@ var Item = React.createClass({displayName: "Item",
                         React.createElement("span", {className: "item-name"}, this.props.data.name), 
                         React.createElement("span", {className: "item-unit-price"}, "単価：", this.props.data.unitPrice, "円")
                     ), 
-                    React.createElement("img", {src: this.props.data.url ? this.props.data.url : "/img/unset.png", className: "item-image"}), 
+                    React.createElement("img", {src: imageUrl, className: "item-image"}), 
                     React.createElement("p", {className: "item-description"}, this.props.data.description)
                 )
             )
@@ -239,7 +251,8 @@ var ItemList = React.createClass({displayName: "ItemList",
         var items = this.props.items.map(function(item) {
             return (
                 React.createElement("li", {key: "item-list_" + item.id}, 
-                    React.createElement(Item, {key: "item_" + item.id, data: item, 
+                    React.createElement(Item, {key: "item_" + item.id, 
+                          data: item, 
                           onEditClick: this.handleItemEditClick, 
                           onRemoveClick: this.handleItemRemoveClick}
                     )
@@ -337,16 +350,11 @@ var Page = React.createClass({displayName: "Page",
     render: function() {
         return (
             React.createElement("div", {className: "Page container"}, 
-                React.createElement("div", {className: "row"}, 
-                    React.createElement("div", {className: "col-md-3"}, 
-                        "メニュー", 
-                        React.createElement(Menu, null)
-                    ), 
-                    React.createElement(ItemList, {items: this.state.items, 
-                              onAddClick: this.handleAddClick, 
-                              onItemEditClick: this.handleItemEditClick, 
-                              onItemRemoveClick: this.handleItemRemoveClick}
-                    )
+                React.createElement(Menu, null), 
+                React.createElement(ItemList, {items: this.state.items, 
+                          onAddClick: this.handleAddClick, 
+                          onItemEditClick: this.handleItemEditClick, 
+                          onItemRemoveClick: this.handleItemRemoveClick}
                 ), 
                 React.createElement(ItemEditor, {data: this.state.editorData, 
                             visible: this.state.editorVisible, 
@@ -361,11 +369,14 @@ var Page = React.createClass({displayName: "Page",
 
 var MenuItem = React.createClass({displayName: "MenuItem",
     render: function() {
+        var classes = React.addons.classSet({
+            glyphicon: true,
+        });
         return (
             React.createElement("li", {className: "MenuItem"}, 
                 React.createElement("a", {href: "#"}, 
                     React.createElement("i", {className: "glyphicon glyphicon-" + this.props.icon}), 
-                    this.props.label
+                    React.createElement("span", {className: "icon-label"}, this.props.label)
                 )
             )
         );
@@ -384,7 +395,7 @@ var Menu = React.createClass({displayName: "Menu",
             url: '/categories/',
             type: 'get',
             success: function(data) {
-                console.log(data);
+                data.push({ id: "add-category", icon: "plus" });
                 this.setState({ categories: data });
             }.bind(this),
             fail: function() {
@@ -396,6 +407,7 @@ var Menu = React.createClass({displayName: "Menu",
             url: '/halls/',
             type: 'get',
             success: function(data) {
+                data.push({ id: "add-hall", icon: "plus" });
                 this.setState({ halls: data });
             }.bind(this),
             fail: function() {
@@ -406,22 +418,35 @@ var Menu = React.createClass({displayName: "Menu",
     },
     render: function() {
         var menuGenerator = function(data) {
-            return ( React.createElement(MenuItem, {label: data.label, icon: data.icon}) );
+            return ( React.createElement(MenuItem, {id: data.id, label: data.label, icon: data.icon}) );
         };
         var categoryMenus = this.state.categories.map(menuGenerator);
         var hallMenus = this.state.halls.map(menuGenerator);
         return (
-            React.createElement("div", {className: "Menu"}, 
-                React.createElement("div", {className: "category-menu"}, 
-                    React.createElement("h4", null, "カテゴリ"), 
-                    React.createElement("ul", null, 
-                        categoryMenus
-                    )
-                ), 
-                React.createElement("div", {className: "hall-menu"}, 
-                    React.createElement("h4", null, "会館"), 
-                    React.createElement("ul", null, 
-                        hallMenus
+            React.createElement("nav", {className: "navbar navbar-inverse"}, 
+                React.createElement("div", {className: "container"}, 
+                    React.createElement("div", {className: "navbar-header"}, 
+                        React.createElement("a", {className: "navbar-brand"}, "見積ツール meetoo")
+                    ), 
+                    React.createElement("ul", {className: "nav navbar-nav navbar-left"}, 
+                        React.createElement("li", {className: "dropdown"}, 
+                            React.createElement("a", {href: "#", className: "dropdown-toggle", "data-toggle": "dropdown"}, 
+                                "カテゴリ", React.createElement("span", {className: "caret"})
+                            ), 
+                            React.createElement("ul", {className: "dropdown-menu"}, 
+                                categoryMenus
+                            )
+                        )
+                    ), 
+                    React.createElement("ul", {className: "nav navbar-nav navbar-left"}, 
+                        React.createElement("li", {className: "dropdown"}, 
+                            React.createElement("a", {href: "#", className: "dropdown-toggle", "data-toggle": "dropdown"}, 
+                                "会館", React.createElement("span", {className: "caret"})
+                            ), 
+                            React.createElement("ul", {className: "dropdown-menu"}, 
+                                hallMenus
+                            )
+                        )
                     )
                 )
             )
