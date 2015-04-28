@@ -46,6 +46,12 @@ func NewNotFound() NotFound {
     return &notFound{}
 }
 
+func createTable(tableType interface{}) {
+    if err := db.CreateTableIfNotExists(tableType); err != nil {
+        panic(err)
+    }
+}
+
 func init() {
     var err error
     db, err = createDb()
@@ -55,12 +61,10 @@ func init() {
 
     db.SetLogOutput(os.Stdout)
 
-    if err := db.CreateTableIfNotExists(&Item{}); err != nil {
-        panic(err)
-    }
-    if err := db.CreateTableIfNotExists(&ItemImage{}); err != nil {
-        panic(err)
-    }
+    createTable(&Item{})
+    createTable(&ItemImage{})
+    createTable(&Category{})
+    createTable(&Hall{})
 
     //insertTestData()
 }
@@ -95,4 +99,25 @@ func insertTestData() {
     if _, err := db.Insert(&Item{Name: fmt.Sprintf("%d", rand.Int31n(9999)), Description: &desc}); err != nil {
         panic(err)
     }
+}
+
+type id struct {
+    Id int64
+    Name string
+}
+
+func checkNameDuplicateForInsert(tableType interface{}, name string) bool {
+    var c int64
+    if err := db.Select(&c, db.Count(), db.From(tableType), db.Where("name","=",name)); err != nil {
+        panic(err)
+    }
+    return c == 0
+}
+
+func checkNameDuplicateForUpdate(tableType interface{}, updateTargetId int64, name string) bool {
+    var c int64
+    if err := db.Select(&c, db.Count(), db.From(tableType), db.Where("name","=",name).And(db.Where("id","<>",updateTargetId))); err != nil {
+        panic(err)
+    }
+    return c == 0
 }

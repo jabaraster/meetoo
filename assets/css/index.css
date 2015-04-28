@@ -77,6 +77,9 @@
 .Item:hover .tool-box .btn {
   display: inline;
 }
+.ItemList .add-message {
+  text-align: right;
+}
 .Message {
   position: relative;
   top: 0px;
@@ -99,4 +102,19 @@
 }
 .icon-label {
   margin-left: 10px;
+}
+.MenuItem .remover {
+  color: rgba(0, 0, 0, 0);
+  margin-left: -4px;
+  margin-right: 4px;
+}
+.MenuItem .editor {
+  color: rgba(0, 0, 0, 0);
+  margin-right: 6px;
+}
+.MenuItem:hover a[class^="id:"] .remover {
+  color: #c81e1e;
+}
+.MenuItem:hover a[class^="id:"] .editor {
+  color: #1e961e;
 }

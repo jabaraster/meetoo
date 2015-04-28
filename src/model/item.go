@@ -93,9 +93,9 @@ func GetAllItems() []Item {
     return item
 }
 
-func InsertItem(name string, unitPrice *int32, description *string, imageDataUrl *string) (*Item, Duplicate) {
-    if !checkNameDuplicateForInsert(name) {
-        return nil, NewDuplicate("name", name)
+func InsertItem(name string, unitPrice *int32, description *string, imageDataUrl *string) Duplicate {
+    if !checkNameDuplicateForInsert(&Item{}, name) {
+        return NewDuplicate("name", name)
     }
 
 //    defer tx()
@@ -112,19 +112,22 @@ func InsertItem(name string, unitPrice *int32, description *string, imageDataUrl
 
     insertItemImage(item.Id, imageDataUrl)
 
-    return &item, nil
+    return nil
 }
 
-func UpdateItem(itemId int64, name string, unitPrice *int32, description *string, imageDataUrl *string) (*Item, Duplicate) {
-    if !checkNameDuplicateForUpdate(name, itemId) {
-        return nil, NewDuplicate("name", name)
+func UpdateItem(itemId int64, name string, unitPrice *int32, description *string, imageDataUrl *string) (Duplicate, NotFound) {
+    if !checkNameDuplicateForUpdate(&Category{}, itemId, name) {
+        return NewDuplicate("name", name), nil
     }
 
 // TODO トランザクション入れるとうまくいかない・・・！
 //    defer tx()
 //    beginTx();
 
-    item := GetItemById(itemId)
+    item, notFound := GetItemById(itemId)
+    if notFound != nil {
+        return nil, notFound
+    }
     item.Name = name
     item.UnitPrice = unitPrice
     item.Description = description
@@ -137,7 +140,7 @@ func UpdateItem(itemId int64, name string, unitPrice *int32, description *string
         insertItemImage(itemId, imageDataUrl)
     }
 
-    return item, nil
+    return nil, nil
 }
 
 func CountAllItemImages() int64 {
@@ -178,18 +181,18 @@ func insertItemImage(itemId int64, imageDataUrl *string) {
     }
 }
 
-func GetItemById(itemId int64) *Item {
+func GetItemById(itemId int64) (*Item, NotFound) {
     var result []Item
-    if err := db.Select(&result, db.Where("id", "=", itemId)); err != nil {
+    if err := db.Select(&result, db.Where("id","=",itemId)); err != nil {
         panic(err)
     }
     switch (len(result)) {
     case 0:
-        return nil
+        return nil, NewNotFound()
     case 1:
-        return &result[0]
+        return &result[0], nil
     }
-    panic(itemId)
+    panic(result)
 }
 
 func RemoveItemById(itemId int64) {
@@ -197,20 +200,4 @@ func RemoveItemById(itemId int64) {
     if _, err := db.Delete(&Item{ Id: itemId }); err != nil {
         fmt.Println(err)
     }
-}
-
-func checkNameDuplicateForInsert(name string) bool {
-    var c int64
-    if err := db.Select(&c, db.Count(), db.From(&Item{}), db.Where("name","=",name)); err != nil {
-        panic(err)
-    }
-    return c == 0
-}
-
-func checkNameDuplicateForUpdate(name string, itemId int64) bool {
-    var c int64
-    if err := db.Select(&c, db.Count(), db.From(&Item{}), db.Where("name","=",name).And(db.Where("id","<>",itemId))); err != nil {
-        panic(err)
-    }
-    return c == 0
 }

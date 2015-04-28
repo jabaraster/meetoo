@@ -19,16 +19,22 @@ func main() {
     goji.Get("/", assets.BasicLayoutHtmlHandler("html/index.html"))
 
     // API
-    goji.Get("/items/", handler.GetAllItems)
-    goji.Post("/items/", handler.RegisterItem)
-    goji.Get("/items/:itemId", handler.GetItemById)
-    goji.Get("/items/:itemIdWithTimestamp/image", handler.GetItemImageByItemId)
-    goji.Post("/items/:itemId", handler.RegisterItem)
+    goji.Get ("/items/", handler.GetAllItems)
+    goji.Post("/items/", handler.InsertItem)
+    goji.Get ("/items/:itemId", handler.GetItemById)
+    goji.Post("/items/:itemId", handler.UpdateItem)
     goji.Post("/items/:itemId/remove", handler.RemoveItem)
-    goji.Get("/image_count", handler.CountAllItemImages)
+    goji.Get ("/items/:itemIdWithTimestamp/image", handler.GetItemImageByItemId)
+    goji.Get ("/image_count", handler.CountAllItemImages)
 
-    goji.Get("/categories/", handler.GetAllCategories)
-    goji.Get("/halls/", handler.GetAllHalls)
+    goji.Get ("/categories/", handler.GetAllCategories)
+    goji.Post("/categories/", handler.InsertCategory)
+    goji.Post("/categories/:categoryId", handler.UpdateCategory)
+    goji.Post("/categories/:categoryId/remove", handler.RemoveCategory)
+    goji.Get ("/halls/", handler.GetAllHalls)
+    goji.Post("/halls/", handler.InsertHall)
+    goji.Post("/halls/:hallId", handler.UpdateHall)
+    goji.Post("/halls/:hallId/remove", handler.RemoveHall)
 
     // 静的リソース
     goji.Get("/css/*", assets.ContentTypeHandler("text/css"))

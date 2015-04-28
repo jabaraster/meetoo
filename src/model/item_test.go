@@ -2,7 +2,6 @@ package model
 
 import (
     "testing"
-    "fmt"
 )
 
 func TestGetItemImagesByItems(t *testing.T) {
@@ -14,9 +13,6 @@ func TestGetItemImagesByItems(t *testing.T) {
     if item == nil {
         item = getItemByName(name)
     }
-
-    fmt.Println("★★★★★★★★★★★")
-    fmt.Println(item)
 
     items := GetItemImagesByItems([]Item{ *item })
     if len(items) != 1 {

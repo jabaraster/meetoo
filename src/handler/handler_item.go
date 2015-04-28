@@ -62,14 +62,14 @@ func GetItemById(c web.C, w http.ResponseWriter, r *http.Request) {
 
     var itemId int64
     var cnvErr error
-    itemId, cnvErr = strconv.ParseInt(itemIdStr, 10, 32)
+    itemId, cnvErr = strconv.ParseInt(itemIdStr, 10, 64)
     if cnvErr != nil {
         http.NotFound(w, r)
         return
     }
 
-    item := model.GetItemById(itemId)
-    if item == nil {
+    item, notFound := model.GetItemById(itemId)
+    if notFound != nil {
         http.NotFound(w, r)
         return
     }
@@ -118,15 +118,13 @@ func RemoveItem(c web.C, w http.ResponseWriter, r *http.Request) {
     http.Error(w, "no content", http.StatusNoContent) // エラーというわけではないが、他に適切な関数がなさそう
 }
 
-func RegisterItem(c web.C, w http.ResponseWriter, r *http.Request) {
-    itemIdStr := c.URLParams["itemId"]
+func InsertItem(w http.ResponseWriter, r *http.Request) {
     unitPriceStr := r.FormValue("unitPrice")
-
     var cnvErr error
-
     var unitPrice *int32
     unitPrice, cnvErr = util.Atoi32(unitPriceStr)
     if cnvErr != nil {
+        webutil.WriteJsonResponse(w, map[string]interface{}{ "status": "NG", "operation": "INSERT", "message": "単価が不正です。" });
         return
     }
 
@@ -134,16 +132,19 @@ func RegisterItem(c web.C, w http.ResponseWriter, r *http.Request) {
     desc := r.FormValue("description")
     imageDataUrl := r.FormValue("imageDataUrl")
 
-    if len(itemIdStr) == 0 {
-        _, dup := model.InsertItem(name, unitPrice, &desc, &imageDataUrl)
-        if dup != nil {
-            webutil.WriteJsonResponse(w, map[string]interface{}{ "status": "NG", "operation": "INSERT", "message": "アイテム名が重複しています。" });
-        } else {
-            webutil.WriteJsonResponse(w, map[string]interface{}{ "status": "OK", "operation": "INSERT" });
-        }
+    duplicated := model.InsertItem(name, unitPrice, &desc, &imageDataUrl)
+    if duplicated != nil {
+        webutil.WriteJsonResponse(w, map[string]interface{}{ "status": "NG", "operation": "INSERT", "message": "アイテム名が重複しています。" });
         return
     }
+    webutil.WriteJsonResponse(w, map[string]interface{}{ "status": "OK", "operation": "INSERT" });
+}
 
+func UpdateItem(c web.C, w http.ResponseWriter, r *http.Request) {
+
+    var cnvErr error
+
+    itemIdStr := c.URLParams["itemId"]
     var itemId int64
     itemId, cnvErr = strconv.ParseInt(itemIdStr, 10, 32)
     if cnvErr != nil {
@@ -151,24 +152,29 @@ func RegisterItem(c web.C, w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    _, dup := model.UpdateItem(itemId, name, unitPrice, &desc, &imageDataUrl)
-    if dup != nil {
-        webutil.WriteJsonResponse(w, map[string]interface{}{ "status": "NG", "operation": "UPDATE", "message": "アイテム名が重複しています。" })
-    } else {
-        webutil.WriteJsonResponse(w, map[string]interface{}{ "status": "OK", "operation": "UPDATE" })
+
+    unitPriceStr := r.FormValue("unitPrice")
+    var unitPrice *int32
+    unitPrice, cnvErr = util.Atoi32(unitPriceStr)
+    if cnvErr != nil {
+        webutil.WriteJsonResponse(w, map[string]interface{}{ "status": "NG", "operation": "INSERT", "message": "単価が不正です。" });
+        return
     }
-}
 
-func GetAllCategories(w http.ResponseWriter, r *http.Request) {
-    webutil.WriteJsonResponse(w, []map[string]string {
-        { "icon": "home", "id": "hall", "label": "会館" },
-    })
-}
+    name := r.FormValue("name")
+    desc := r.FormValue("description")
+    imageDataUrl := r.FormValue("imageDataUrl")
 
-func GetAllHalls(w http.ResponseWriter, r *http.Request) {
-    webutil.WriteJsonResponse(w, []map[string]string {
-        { "id": "hall-A", "label": "会館A" },
-    })
+    duplicated, notFound := model.UpdateItem(itemId, name, unitPrice, &desc, &imageDataUrl)
+    if notFound != nil {
+        http.NotFound(w, r)
+        return
+    }
+    if duplicated != nil {
+        webutil.WriteJsonResponse(w, map[string]interface{}{ "status": "NG", "operation": "UPDATE", "message": "アイテム名が重複しています。" })
+        return
+    }
+    webutil.WriteJsonResponse(w, map[string]interface{}{ "status": "OK", "operation": "UPDATE" })
 }
 
 func CountAllItemImages(w http.ResponseWriter, r *http.Request) {
