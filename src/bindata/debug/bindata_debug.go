@@ -563,6 +563,42 @@ func assets_js_index_js_min() (*asset, error) {
 	return a, err
 }
 
+// assets_js_menu_js reads file data from disk. It returns an error on failure.
+func assets_js_menu_js() (*asset, error) {
+	path := "/Users/jabaraster/Documents/Develop/Go/meetoo/assets/js/menu.js"
+	name := "assets/js/menu.js"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// assets_js_menu_js_min reads file data from disk. It returns an error on failure.
+func assets_js_menu_js_min() (*asset, error) {
+	path := "/Users/jabaraster/Documents/Develop/Go/meetoo/assets/js/menu.js.min"
+	name := "assets/js/menu.js.min"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
 // Asset loads and returns the asset for the given name.
 // It returns an error if the asset could not be found or
 // could not be loaded.
@@ -645,6 +681,8 @@ var _bindata = map[string]func() (*asset, error){
 	"assets/js/common/react.min.js": assets_js_common_react_min_js,
 	"assets/js/index.js": assets_js_index_js,
 	"assets/js/index.js.min": assets_js_index_js_min,
+	"assets/js/menu.js": assets_js_menu_js,
+	"assets/js/menu.js.min": assets_js_menu_js_min,
 }
 
 // AssetDir returns the file names below a certain
@@ -762,6 +800,10 @@ var _bintree = &_bintree_t{nil, map[string]*_bintree_t{
 			"index.js": &_bintree_t{assets_js_index_js, map[string]*_bintree_t{
 			}},
 			"index.js.min": &_bintree_t{assets_js_index_js_min, map[string]*_bintree_t{
+			}},
+			"menu.js": &_bintree_t{assets_js_menu_js, map[string]*_bintree_t{
+			}},
+			"menu.js.min": &_bintree_t{assets_js_menu_js_min, map[string]*_bintree_t{
 			}},
 		}},
 	}},

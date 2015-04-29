@@ -52,6 +52,14 @@ func (e *ItemImage) BeforeUpdate() error {
     return nil
 }
 
+func GetAllItems() []Item {
+    var item []Item
+    if err := db.Select(&item); err != nil {
+        panic(err)
+    }
+    return item
+}
+
 func GetItemImageByItemId(itemId int64) (*ItemImage, NotFound) {
     var result []ItemImage
     if err := db.Select(&result, db.Where("item_id","=",itemId)); err != nil {
@@ -83,14 +91,6 @@ func GetItemImagesByItems(items []Item) []ItemImage {
     }
 
     return result
-}
-
-func GetAllItems() []Item {
-    var item []Item
-    if err := db.Select(&item); err != nil {
-        panic(err)
-    }
-    return item
 }
 
 func InsertItem(name string, unitPrice *int32, description *string, imageDataUrl *string) Duplicate {

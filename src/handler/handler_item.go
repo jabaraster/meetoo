@@ -14,16 +14,10 @@ import (
     "../util"
 )
 
-func findImage(item model.Item, images []model.ItemImage) *model.ItemImage {
-    for _, image := range images {
-        if item.Id == image.ItemId {
-            return &image
-        }
-    }
-    return nil
-}
-
 func GetAllItems(w http.ResponseWriter, r *http.Request) {
+//    category := r.FormValue("category")
+//    hall := r.FormValue("hall")
+
     items := model.GetAllItems()
     images := model.GetItemImagesByItems(items)
     var res []map[string]interface{}
@@ -182,4 +176,13 @@ func CountAllItemImages(w http.ResponseWriter, r *http.Request) {
     webutil.WriteJsonResponse(w, []map[string]int64 {
         { "count": c },
     })
+}
+
+func findImage(item model.Item, images []model.ItemImage) *model.ItemImage {
+    for _, image := range images {
+        if item.Id == image.ItemId {
+            return &image
+        }
+    }
+    return nil
 }
