@@ -12,6 +12,7 @@ type Item struct {
     Name string `db:"unique" json:"name"`
     UnitPrice *int32 `json:"unitPrice"`
     Description *string `json:"description"`
+    CategoryId *int64 `json:"categoryId"`
     Created time.Time `json:"created"`
     Updated time.Time `json:"updated"`
 }
@@ -93,7 +94,7 @@ func GetItemImagesByItems(items []Item) []ItemImage {
     return result
 }
 
-func InsertItem(name string, unitPrice *int32, description *string, imageDataUrl *string) Duplicate {
+func InsertItem(name string, unitPrice *int32, categoryId *int64, description *string, imageDataUrl *string) Duplicate {
     if !checkNameDuplicateForInsert(&Item{}, name) {
         return NewDuplicate("name", name)
     }
@@ -104,6 +105,7 @@ func InsertItem(name string, unitPrice *int32, description *string, imageDataUrl
     item := Item {
         Name: name,
         UnitPrice: unitPrice,
+        CategoryId: categoryId,
         Description: description,
     }
     if _, err := db.Insert(&item); err != nil {
@@ -115,7 +117,7 @@ func InsertItem(name string, unitPrice *int32, description *string, imageDataUrl
     return nil
 }
 
-func UpdateItem(itemId int64, name string, unitPrice *int32, description *string, imageDataUrl *string) (Duplicate, NotFound) {
+func UpdateItem(itemId int64, name string, unitPrice *int32, categoryId *int64, description *string, imageDataUrl *string) (Duplicate, NotFound) {
     if !checkNameDuplicateForUpdate(&Category{}, itemId, name) {
         return NewDuplicate("name", name), nil
     }
@@ -130,6 +132,7 @@ func UpdateItem(itemId int64, name string, unitPrice *int32, description *string
     }
     item.Name = name
     item.UnitPrice = unitPrice
+    item.CategoryId = categoryId
     item.Description = description
     if _, err := db.Update(item); err != nil {
         panic(err)

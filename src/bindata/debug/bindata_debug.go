@@ -563,6 +563,42 @@ func assets_js_index_js_min() (*asset, error) {
 	return a, err
 }
 
+// assets_js_item_js reads file data from disk. It returns an error on failure.
+func assets_js_item_js() (*asset, error) {
+	path := "/Users/jabaraster/Documents/Develop/Go/meetoo/assets/js/item.js"
+	name := "assets/js/item.js"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// assets_js_item_js_min reads file data from disk. It returns an error on failure.
+func assets_js_item_js_min() (*asset, error) {
+	path := "/Users/jabaraster/Documents/Develop/Go/meetoo/assets/js/item.js.min"
+	name := "assets/js/item.js.min"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
 // assets_js_menu_js reads file data from disk. It returns an error on failure.
 func assets_js_menu_js() (*asset, error) {
 	path := "/Users/jabaraster/Documents/Develop/Go/meetoo/assets/js/menu.js"
@@ -681,6 +717,8 @@ var _bindata = map[string]func() (*asset, error){
 	"assets/js/common/react.min.js": assets_js_common_react_min_js,
 	"assets/js/index.js": assets_js_index_js,
 	"assets/js/index.js.min": assets_js_index_js_min,
+	"assets/js/item.js": assets_js_item_js,
+	"assets/js/item.js.min": assets_js_item_js_min,
 	"assets/js/menu.js": assets_js_menu_js,
 	"assets/js/menu.js.min": assets_js_menu_js_min,
 }
@@ -800,6 +838,10 @@ var _bintree = &_bintree_t{nil, map[string]*_bintree_t{
 			"index.js": &_bintree_t{assets_js_index_js, map[string]*_bintree_t{
 			}},
 			"index.js.min": &_bintree_t{assets_js_index_js_min, map[string]*_bintree_t{
+			}},
+			"item.js": &_bintree_t{assets_js_item_js, map[string]*_bintree_t{
+			}},
+			"item.js.min": &_bintree_t{assets_js_item_js_min, map[string]*_bintree_t{
 			}},
 			"menu.js": &_bintree_t{assets_js_menu_js, map[string]*_bintree_t{
 			}},

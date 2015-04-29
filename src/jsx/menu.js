@@ -189,8 +189,10 @@ window.Menu = React.createClass({
             url: '/categories/',
             type: 'get',
             success: function(data) {
-                data.push({ id: "add-category", name:"(追加)", icon: "plus" });
-                this.setState({ categories: data });
+                if (this.props.onLoadCategories) this.props.onLoadCategories({ data: data });
+                var cp = data.concat();
+                cp.push({ id: "add-category", name:"(追加)", icon: "plus" });
+                this.setState({ categories: cp });
             }.bind(this),
             fail: function() {
                 console.log(arguments);
@@ -349,4 +351,4 @@ window.Menu = React.createClass({
     }
 });
 
-})(jQuery)
+})(jQuery);

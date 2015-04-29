@@ -3,6 +3,7 @@ package handler
 import (
     "strconv"
     "time"
+    "fmt"
     "strings"
     "net/http"
 
@@ -34,6 +35,7 @@ func GetAllItems(w http.ResponseWriter, r *http.Request) {
         res = append(res, map[string]interface{}{
             "id": item.Id,
             "name": item.Name,
+            "categoryId": item.CategoryId,
             "unitPrice": item.UnitPrice,
             "description": item.Description,
             "imageTimestamp": imageTimestamp,
@@ -113,8 +115,9 @@ func RemoveItem(c web.C, w http.ResponseWriter, r *http.Request) {
 }
 
 func InsertItem(w http.ResponseWriter, r *http.Request) {
-    unitPriceStr := r.FormValue("unitPrice")
     var cnvErr error
+
+    unitPriceStr := r.FormValue("unitPrice")
     var unitPrice *int32
     unitPrice, cnvErr = util.Atoi32(unitPriceStr)
     if cnvErr != nil {
@@ -122,11 +125,19 @@ func InsertItem(w http.ResponseWriter, r *http.Request) {
         return
     }
 
+    categoryIdStr := r.FormValue("categoryId")
+    var categoryId *int64
+    categoryId, cnvErr = util.Atoi64(categoryIdStr)
+    if cnvErr != nil {
+        webutil.WriteJsonResponse(w, map[string]interface{}{ "status": "NG", "operation": "INSERT", "message": "カテゴリIDが不正です。" });
+        return
+    }
+
     name := r.FormValue("name")
     desc := r.FormValue("description")
     imageDataUrl := r.FormValue("imageDataUrl")
 
-    duplicated := model.InsertItem(name, unitPrice, &desc, &imageDataUrl)
+    duplicated := model.InsertItem(name, unitPrice, categoryId, &desc, &imageDataUrl)
     if duplicated != nil {
         webutil.WriteJsonResponse(w, map[string]interface{}{ "status": "NG", "operation": "INSERT", "message": "アイテム名が重複しています。" });
         return
@@ -135,7 +146,6 @@ func InsertItem(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateItem(c web.C, w http.ResponseWriter, r *http.Request) {
-
     var cnvErr error
 
     itemIdStr := c.URLParams["itemId"]
@@ -146,12 +156,21 @@ func UpdateItem(c web.C, w http.ResponseWriter, r *http.Request) {
         return
     }
 
-
     unitPriceStr := r.FormValue("unitPrice")
     var unitPrice *int32
     unitPrice, cnvErr = util.Atoi32(unitPriceStr)
     if cnvErr != nil {
-        webutil.WriteJsonResponse(w, map[string]interface{}{ "status": "NG", "operation": "INSERT", "message": "単価が不正です。" });
+        webutil.WriteJsonResponse(w, map[string]interface{}{ "status": "NG", "operation": "UPDATE", "message": "単価が不正です。" });
+        return
+    }
+
+
+    categoryIdStr := r.FormValue("categoryId")
+    fmt.Println(categoryIdStr)
+    var categoryId *int64
+    categoryId, cnvErr = util.Atoi64(categoryIdStr)
+    if cnvErr != nil {
+        webutil.WriteJsonResponse(w, map[string]interface{}{ "status": "NG", "operation": "UPDATE", "message": "カテゴリIDが不正です。" });
         return
     }
 
@@ -159,7 +178,7 @@ func UpdateItem(c web.C, w http.ResponseWriter, r *http.Request) {
     desc := r.FormValue("description")
     imageDataUrl := r.FormValue("imageDataUrl")
 
-    duplicated, notFound := model.UpdateItem(itemId, name, unitPrice, &desc, &imageDataUrl)
+    duplicated, notFound := model.UpdateItem(itemId, name, unitPrice, categoryId, &desc, &imageDataUrl)
     if notFound != nil {
         http.NotFound(w, r)
         return
