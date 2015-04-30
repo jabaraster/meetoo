@@ -2,6 +2,18 @@
 "use strict";
 
 window.ItemEditor = React.createClass({
+    statics: {
+        toMap: function(hallIdArray) {
+            if (!hallIdArray) {
+                return {};
+            }
+            var ret = {};
+            hallIdArray.forEach(function(hallId) {
+                ret[hallId] = 'dummy';
+            });
+            return ret;
+        }
+    },
     getInitialState: function() {
         return {
             id: this.props.data.id,
@@ -9,6 +21,9 @@ window.ItemEditor = React.createClass({
             unitPrice: this.props.data.unitPrice,
             description: this.props.data.description,
             categoryId: this.props.data.categoryId,
+            belongHalls: ItemEditor.toMap(this.props.belongHalls),
+
+            halls: this.props.halls,
             url: this.props.data.id ? '/items/' + this.props.data.id + '___' + this.props.data.imageTimestamp + '/image' : '/img/unset.png',
 
             messageVisible: false,
@@ -31,6 +46,10 @@ window.ItemEditor = React.createClass({
     },
     handleCategoryChange: function(e) {
         this.setState({ categoryId: e.target.value });
+    },
+    handleHallCheckChange: function(e) {
+        var hallId = e.target.value - 0;
+        this.state.belongHalls[hallId] = e.target.checked;
     },
     handleFileSelect: function(files) {
         if (files.length === 0) return;
@@ -70,12 +89,27 @@ window.ItemEditor = React.createClass({
             catId = null;
         }
         var desc = React.findDOMNode(this.refs.description).value;
+
+        var hallIds = [];
+        for (var id in this.state.belongHalls) {
+            if (this.state.belongHalls[id]) {
+                hallIds.push(id);
+            }
+        }
+
         var url = this.state.id ? "/items/" + this.state.id : "/items/";
         this.setState({ indicatorFor: React.findDOMNode(this.refs.form), indicatorActive: true });
         $.ajax({
             url: url,
             type: "post",
-            data: { name: name, unitPrice: unitPrice, imageDataUrl: imageDataUrl, categoryId: catId, description: desc },
+            data: {
+                name: name,
+                unitPrice: unitPrice,
+                imageDataUrl: imageDataUrl,
+                categoryId: catId,
+                belongHallIds: hallIds.join(','),
+                description: desc
+            },
             success: function(response) {
                 if (response.status !== 'OK') {
                     this.setState({
@@ -114,6 +148,7 @@ window.ItemEditor = React.createClass({
                 unitPrice: this.props.data.unitPrice,
                 categoryId: this.props.data.categoryId,
                 description: this.props.data.description,
+                belongHalls: ItemEditor.toMap(this.props.belongHalls),
                 url: this.props.data.id ? '/items/' + this.props.data.id + '___' + this.props.data.imageTimestamp + '/image' : '/img/unset.png',
             });
         }
@@ -128,7 +163,19 @@ window.ItemEditor = React.createClass({
         var categoriesData = [{ id:'null', name: '(カテゴリなし)' }].concat(this.props.categories.concat());
         var categories = categoriesData.map(function(category) {
             return (
-                <option value={category.id}>{category.name}</option>
+                <option key={"category_" + category.id} value={category.id}>{category.name}</option>
+            );
+        });
+        var halls = this.props.halls.map(function(hall) {
+            return (
+                <label key={"hallName_" + hall.id} value={hall.id} className="hall-name">
+                    <input type="checkbox"
+                           value={hall.id}
+                           defaultChecked={this.state.belongHalls[hall.id] ? "checked" : ""}
+                           onChange={this.handleHallCheckChange}
+                    />
+                    {hall.name}
+                </label>
             );
         }.bind(this));
         var imageSet = !!this.state.url;
@@ -195,6 +242,10 @@ window.ItemEditor = React.createClass({
                                 <span>画像をドラッグ＆ドロップ</span>
                                 :null }
                                 <Indicator buttonRef={this.state.indicatorFor} active={this.state.indicatorActive} />
+                            </div>
+                            <div className="form-group">
+                                <h3>所属会場</h3>
+                                {halls}
                             </div>
                         </form>
 

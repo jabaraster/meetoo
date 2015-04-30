@@ -205,8 +205,10 @@ window.Menu = React.createClass({
             url: '/halls/',
             type: 'get',
             success: function(data) {
-                data.push({ id: "add-hall", name:"(追加)", icon: "plus" });
-                this.setState({ halls: data });
+                if (this.props.onLoadHalls) this.props.onLoadHalls({ data: data });
+                var cp = data.concat();
+                cp.push({ id: "add-hall", name:"(追加)", icon: "plus" });
+                this.setState({ halls: cp });
             }.bind(this),
             fail: function() {
                 console.log(arguments);
@@ -303,6 +305,7 @@ window.Menu = React.createClass({
                 return (
                     <MenuItem kind={kind}
                               data={data}
+                              key={"menuItem_" + data.id}
                               onClick={this.handleMenuItemClick}
                               onEditClick={this.handleMenuItemEditClick}
                               onRemoveClick={this.handleMenuItemRemoveClick}

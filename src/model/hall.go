@@ -101,3 +101,7 @@ func checkHallDuplicateForUpdate(updateTargetId int64, descriptor string, name s
     }
     return c == 0
 }
+
+func createHallTables() {
+    createTable(&Hall{})
+}

@@ -37,6 +37,7 @@ var Page = React.createClass({displayName: "Page",
         return {
             items: [],
             categories: [],
+            halls: [],
 
             editorData: {},
             editorVisible: false
@@ -97,11 +98,15 @@ var Page = React.createClass({displayName: "Page",
     handleLoadCategories: function(e) {
         this.setState({ categories: e.data });
     },
+    handleLoadHalls: function(e) {
+        this.setState({ halls: e.data });
+    },
     render: function() {
         return (
             React.createElement("div", {className: "Page container"}, 
                 React.createElement(Menu, {onFilter: this.handleFilter, 
-                      onLoadCategories: this.handleLoadCategories}
+                      onLoadCategories: this.handleLoadCategories, 
+                      onLoadHalls: this.handleLoadHalls}
                 ), 
                 React.createElement(ItemList, {items: this.state.items, 
                           onAddClick: this.handleAddClick, 
@@ -111,6 +116,8 @@ var Page = React.createClass({displayName: "Page",
                 React.createElement(ItemEditor, {data: this.state.editorData, 
                             visible: this.state.editorVisible, 
                             categories: this.state.categories, 
+                            halls: this.state.halls, 
+                            belongHalls: [1, 2], 
                             onCloseClick: this.handleEditorCloseClick, 
                             onInsert: this.handleInsert, 
                             onUpdate: this.handleUpdate}

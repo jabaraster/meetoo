@@ -128,6 +128,11 @@ func getCategoryById(categoryId int64) *Category {
     panic(result)
 }
 
+func createCategoryTables() {
+    createTable(&Category{});
+    insertHallCategory()
+}
+
 func insertHallCategory() {
     InsertCategory(hallCategoryDescriptor, "会場", "home")
 }

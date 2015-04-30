@@ -37,6 +37,7 @@ var Page = React.createClass({
         return {
             items: [],
             categories: [],
+            halls: [],
 
             editorData: {},
             editorVisible: false
@@ -97,11 +98,15 @@ var Page = React.createClass({
     handleLoadCategories: function(e) {
         this.setState({ categories: e.data });
     },
+    handleLoadHalls: function(e) {
+        this.setState({ halls: e.data });
+    },
     render: function() {
         return (
             <div className="Page container">
                 <Menu onFilter={this.handleFilter}
                       onLoadCategories={this.handleLoadCategories}
+                      onLoadHalls={this.handleLoadHalls}
                 />
                 <ItemList items={this.state.items}
                           onAddClick={this.handleAddClick}
@@ -111,6 +116,8 @@ var Page = React.createClass({
                 <ItemEditor data={this.state.editorData}
                             visible={this.state.editorVisible}
                             categories={this.state.categories}
+                            halls={this.state.halls}
+                            belongHalls={[1, 2]}
                             onCloseClick={this.handleEditorCloseClick}
                             onInsert={this.handleInsert}
                             onUpdate={this.handleUpdate}

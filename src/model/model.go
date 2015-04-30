@@ -61,11 +61,9 @@ func init() {
 
     db.SetLogOutput(os.Stdout)
 
-    createTable(&Item{})
-    createTable(&ItemImage{})
-    createTable(&Category{})
-    insertHallCategory()
-    createTable(&Hall{})
+    createItemTables();
+    createCategoryTables();
+    createHallTables();
 }
 
 func createDb() (*genmai.DB, error) {

@@ -22,6 +22,10 @@ type ItemImage struct {
     Data []byte
     Created time.Time `json:"created"`
 }
+type ItemBelongHall struct {
+    ItemId int64
+    HallId int64
+}
 
 func (e *Item) setCreatedAt(t time.Time) {
     e.Created = t
@@ -94,7 +98,15 @@ func GetItemImagesByItems(items []Item) []ItemImage {
     return result
 }
 
-func InsertItem(name string, unitPrice *int32, categoryId *int64, description *string, imageDataUrl *string) Duplicate {
+func GetBelongHallByItemId(itemId int64) []ItemBelongHall {
+    var result []ItemBelongHall
+    if err := db.Select(&result, db.Where("item_id","=",itemId)); err != nil {
+        panic(err)
+    }
+    return result
+}
+
+func InsertItem(name string, unitPrice *int32, categoryId *int64, belongHallIds []int64, description *string, imageDataUrl *string) Duplicate {
     if !checkNameDuplicateForInsert(&Item{}, name) {
         return NewDuplicate("name", name)
     }
@@ -113,11 +125,12 @@ func InsertItem(name string, unitPrice *int32, categoryId *int64, description *s
     }
 
     insertItemImage(item.Id, imageDataUrl)
+    insertBelongHallIds(item.Id, belongHallIds)
 
     return nil
 }
 
-func UpdateItem(itemId int64, name string, unitPrice *int32, categoryId *int64, description *string, imageDataUrl *string) (Duplicate, NotFound) {
+func UpdateItem(itemId int64, name string, unitPrice *int32, categoryId *int64, belongHallIds []int64, description *string, imageDataUrl *string) (Duplicate, NotFound) {
     if !checkNameDuplicateForUpdate(&Category{}, itemId, name) {
         return NewDuplicate("name", name), nil
     }
@@ -141,6 +154,7 @@ func UpdateItem(itemId int64, name string, unitPrice *int32, categoryId *int64, 
         removeItemImageByItemId(itemId)
         insertItemImage(itemId, imageDataUrl)
     }
+    insertBelongHallIds(itemId, belongHallIds)
 
     return nil, nil
 }
@@ -151,6 +165,33 @@ func CountAllItemImages() int64 {
         panic(err)
     }
     return c
+}
+
+func GetItemById(itemId int64) (*Item, NotFound) {
+    var result []Item
+    if err := db.Select(&result, db.Where("id","=",itemId)); err != nil {
+        panic(err)
+    }
+    switch (len(result)) {
+    case 0:
+        return nil, NewNotFound()
+    case 1:
+        return &result[0], nil
+    }
+    panic(result)
+}
+
+func RemoveItemById(itemId int64) {
+    removeItemImageByItemId(itemId)
+    if _, err := db.Delete(&Item{ Id: itemId }); err != nil {
+        fmt.Println(err)
+    }
+}
+
+func createItemTables() {
+    createTable(&Item{})
+    createTable(&ItemImage{})
+    createTable(&ItemBelongHall{})
 }
 
 func removeItemImageByItemId(itemId int64) {
@@ -183,23 +224,15 @@ func insertItemImage(itemId int64, imageDataUrl *string) {
     }
 }
 
-func GetItemById(itemId int64) (*Item, NotFound) {
-    var result []Item
-    if err := db.Select(&result, db.Where("id","=",itemId)); err != nil {
+func insertBelongHallIds(itemId int64, belongHallIds []int64) {
+    if _, err := db.DB().Exec("delete from item_belong_hall where item_id = ?", itemId); err != nil {
         panic(err)
     }
-    switch (len(result)) {
-    case 0:
-        return nil, NewNotFound()
-    case 1:
-        return &result[0], nil
+    ins := make([]ItemBelongHall, len(belongHallIds))
+    for idx, belongHallId := range belongHallIds {
+        ins[idx] = ItemBelongHall{ ItemId: itemId, HallId: belongHallId }
     }
-    panic(result)
-}
-
-func RemoveItemById(itemId int64) {
-    removeItemImageByItemId(itemId)
-    if _, err := db.Delete(&Item{ Id: itemId }); err != nil {
-        fmt.Println(err)
+    if _, err := db.Insert(ins); err != nil {
+        panic(err)
     }
 }

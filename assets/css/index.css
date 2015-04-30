@@ -13,6 +13,10 @@
 .ItemEditor .item-image {
   max-width: 400px;
 }
+.ItemEditor .hall-name {
+  cursor: pointer;
+  margin-right: 6px;
+}
 .Item {
   padding: 6px;
   padding-left: 10px;

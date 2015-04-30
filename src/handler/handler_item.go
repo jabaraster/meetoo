@@ -73,6 +73,24 @@ func GetItemById(c web.C, w http.ResponseWriter, r *http.Request) {
     webutil.WriteJsonResponse(w, item)
 }
 
+func GetItemBelongHallByItemId(c web.C, w http.ResponseWriter, r *http.Request) {
+    itemId, err := strconv.ParseInt(c.URLParams["itemId"], 10, 64)
+    if err != nil {
+        http.NotFound(w, r)
+        return
+    }
+    belongs := model.GetBelongHallByItemId(itemId)
+    var res []int64
+    for _, belong := range belongs {
+        res = append(res, belong.HallId)
+    }
+    if len(res) == 0 {
+        webutil.WriteJsonResponse(w, []interface{}{})
+    } else {
+        webutil.WriteJsonResponse(w, res)
+    }
+}
+
 func GetItemImageByItemId(c web.C, w http.ResponseWriter, r *http.Request) {
     itemIdWithTimestamp := c.URLParams["itemIdWithTimestamp"]
 
@@ -85,7 +103,7 @@ func GetItemImageByItemId(c web.C, w http.ResponseWriter, r *http.Request) {
 
     var itemId int64
     var cnvErr error
-    itemId, cnvErr = strconv.ParseInt(itemIdStr, 10, 32)
+    itemId, cnvErr = strconv.ParseInt(itemIdStr, 10, 64)
     if cnvErr != nil {
         http.NotFound(w, r)
         return
@@ -105,7 +123,7 @@ func GetItemImageByItemId(c web.C, w http.ResponseWriter, r *http.Request) {
 }
 
 func RemoveItem(c web.C, w http.ResponseWriter, r *http.Request) {
-    itemId, err := strconv.ParseInt(c.URLParams["itemId"], 10, 32)
+    itemId, err := strconv.ParseInt(c.URLParams["itemId"], 10, 64)
     if err != nil {
         http.NotFound(w, r)
         return
@@ -136,8 +154,9 @@ func InsertItem(w http.ResponseWriter, r *http.Request) {
     name := r.FormValue("name")
     desc := r.FormValue("description")
     imageDataUrl := r.FormValue("imageDataUrl")
+    belongHallIds := parseBelongHallIds(r.FormValue("belongHallIds"))
 
-    duplicated := model.InsertItem(name, unitPrice, categoryId, &desc, &imageDataUrl)
+    duplicated := model.InsertItem(name, unitPrice, categoryId, belongHallIds, &desc, &imageDataUrl)
     if duplicated != nil {
         webutil.WriteJsonResponse(w, map[string]interface{}{ "status": "NG", "operation": "INSERT", "message": "アイテム名が重複しています。" });
         return
@@ -150,7 +169,7 @@ func UpdateItem(c web.C, w http.ResponseWriter, r *http.Request) {
 
     itemIdStr := c.URLParams["itemId"]
     var itemId int64
-    itemId, cnvErr = strconv.ParseInt(itemIdStr, 10, 32)
+    itemId, cnvErr = strconv.ParseInt(itemIdStr, 10, 64)
     if cnvErr != nil {
         http.NotFound(w, r)
         return
@@ -177,8 +196,9 @@ func UpdateItem(c web.C, w http.ResponseWriter, r *http.Request) {
     name := r.FormValue("name")
     desc := r.FormValue("description")
     imageDataUrl := r.FormValue("imageDataUrl")
+    belongHallIds := parseBelongHallIds(r.FormValue("belongHallIds"))
 
-    duplicated, notFound := model.UpdateItem(itemId, name, unitPrice, categoryId, &desc, &imageDataUrl)
+    duplicated, notFound := model.UpdateItem(itemId, name, unitPrice, categoryId, belongHallIds, &desc, &imageDataUrl)
     if notFound != nil {
         http.NotFound(w, r)
         return
@@ -204,4 +224,16 @@ func findImage(item model.Item, images []model.ItemImage) *model.ItemImage {
         }
     }
     return nil
+}
+
+func parseBelongHallIds(commaJoinedBelongHallIds string) []int64 {
+    tokens := strings.Split(commaJoinedBelongHallIds, ",")
+    var ret []int64 {}
+    for _, token := range tokens {
+        id, err := util.Atoi64(token)
+        if err == nil {
+            ret = append(ret, *id)
+        }
+    }
+    return ret
 }
