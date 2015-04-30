@@ -4,16 +4,15 @@ import (
     "testing"
 )
 
+
 func TestGetItemImagesByItems(t *testing.T) {
     name := "アイテム0"
     unitPrice := int32(10000)
     description := "説明。"
     imageDataUrl := data
-    item,_ := InsertItem(name, &unitPrice, &description, &imageDataUrl)
-    if item == nil {
-        item = getItemByName(name)
-    }
+    InsertItem(name, &unitPrice, nil, &description, &imageDataUrl)
 
+    item := getItemByName(name)
     items := GetItemImagesByItems([]Item{ *item })
     if len(items) != 1 {
         t.Error(items)

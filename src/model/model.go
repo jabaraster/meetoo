@@ -64,9 +64,8 @@ func init() {
     createTable(&Item{})
     createTable(&ItemImage{})
     createTable(&Category{})
+    insertHallCategory()
     createTable(&Hall{})
-
-    //insertTestData()
 }
 
 func createDb() (*genmai.DB, error) {

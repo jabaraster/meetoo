@@ -205,7 +205,7 @@ window.Menu = React.createClass({displayName: "Menu",
             url: '/halls/',
             type: 'get',
             success: function(data) {
-                data.push({ id: "add-hall", name:"(Add...)", icon: "plus" });
+                data.push({ id: "add-hall", name:"(追加)", icon: "plus" });
                 this.setState({ halls: data });
             }.bind(this),
             fail: function() {
@@ -231,7 +231,7 @@ window.Menu = React.createClass({displayName: "Menu",
         if (e.data.id === 'add-hall') {
             this.setState({
                 editorKind: e.kind,
-                editorTitle: '会館追加',
+                editorTitle: '会場追加',
                 editorVisible: true,
                 editorData: {}
             });
@@ -265,7 +265,7 @@ window.Menu = React.createClass({displayName: "Menu",
         } else if (e.kind === 'halls') {
             this.setState({
                 editorKind: e.kind,
-                editorTitle: '会館編集',
+                editorTitle: '会場編集',
                 editorVisible: true,
                 editorData: e.data
             });
@@ -338,7 +338,7 @@ window.Menu = React.createClass({displayName: "Menu",
                     React.createElement("ul", {className: "nav navbar-nav navbar-left"}, 
                         React.createElement("li", {className: "dropdown"}, 
                             React.createElement("a", {href: "", className: "dropdown-toggle", "data-toggle": "dropdown"}, 
-                                "会館", React.createElement("span", {className: "caret"})
+                                "会場", React.createElement("span", {className: "caret"})
                             ), 
                             React.createElement("ul", {className: "dropdown-menu"}, 
                                 hallMenus

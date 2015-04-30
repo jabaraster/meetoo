@@ -122,7 +122,6 @@ func UpdateItem(itemId int64, name string, unitPrice *int32, categoryId *int64, 
         return NewDuplicate("name", name), nil
     }
 
-// TODO トランザクション入れるとうまくいかない・・・！
 //    defer tx()
 //    beginTx();
 

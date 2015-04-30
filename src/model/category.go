@@ -4,6 +4,10 @@ import (
     "time"
 )
 
+const (
+    hallCategoryDescriptor = "hall"
+)
+
 type Category struct {
     Id   int64  `db:"pk" json:"id"`
     Descriptor string `db:"unique" json:"descriptor"`
@@ -76,8 +80,16 @@ func GetCategoryById(categoryId int64) (*Category, NotFound) {
     panic(result)
 }
 
-func RemoveCategoryById(hallId int64) {
-    if _, err := db.Delete(&Category{Id:hallId}); err != nil {
+func RemoveCategoryById(categoryId int64) {
+    category := getCategoryById(categoryId)
+    if category.Descriptor == hallCategoryDescriptor {
+        // 会場カテゴリは削除不可能にする
+        return
+    }
+    if _, err := db.DB().Exec("update item set category_id = null where category_id = ?", categoryId); err != nil {
+        panic(err)
+    }
+    if _, err := db.Delete(category); err != nil {
         panic(err)
     }
 }
@@ -100,4 +112,22 @@ func checkCategoryDuplicateForUpdate(updateTargetId int64, descriptor string, na
         panic(err)
     }
     return c == 0
+}
+
+func getCategoryById(categoryId int64) *Category {
+    var result []Category
+    if err := db.Select(&result, db.Where("id","=",categoryId)); err != nil {
+        panic(err)
+    }
+    switch len(result) {
+    case 0:
+        return nil
+    case 1:
+        return &result[0]
+    }
+    panic(result)
+}
+
+func insertHallCategory() {
+    InsertCategory(hallCategoryDescriptor, "会場", "home")
 }

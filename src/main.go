@@ -5,6 +5,7 @@ import (
     "net/http"
 
     "github.com/zenazn/goji"
+    "github.com/zenazn/goji/web/middleware"
 
     "./assets"
     "./env"
@@ -41,6 +42,10 @@ func main() {
     goji.Get("/js/*", assets.ContentTypeHandler("text/javascript"))
     goji.Get(regexp.MustCompile("/img/.*\\.jpg"), assets.ContentTypeHandler("image/jpeg"))
     goji.Get(regexp.MustCompile("/img/.*\\.png"), assets.ContentTypeHandler("image/png"))
+
+    // ミドルウェア
+    goji.Use(middleware.Recoverer)
+    goji.Use(middleware.NoCache)
 
     goji.Serve()
 }

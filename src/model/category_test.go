@@ -5,11 +5,11 @@ import (
 )
 
 func TestInsertCategory(t *testing.T) {
-    InsertCategory("会館", "home")
+    InsertCategory("hall", "会場", "home")
 }
 
 func TestGetAllCategories(t *testing.T) {
-    InsertCategory("祭壇", "ok")
+    InsertCategory("alter", "祭壇", "ok")
     categories := GetAllCategories();
     if len(categories) == 0 {
         t.Error(categories)
