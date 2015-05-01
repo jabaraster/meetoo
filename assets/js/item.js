@@ -21,9 +21,8 @@ window.ItemEditor = React.createClass({displayName: "ItemEditor",
             unitPrice: this.props.data.unitPrice,
             description: this.props.data.description,
             categoryId: this.props.data.categoryId,
-            belongHalls: ItemEditor.toMap(this.props.belongHalls),
 
-            halls: this.props.halls,
+            belongHalls: [],
             url: this.props.data.id ? '/items/' + this.props.data.id + '___' + this.props.data.imageTimestamp + '/image' : '/img/unset.png',
 
             messageVisible: false,
@@ -47,9 +46,9 @@ window.ItemEditor = React.createClass({displayName: "ItemEditor",
     handleCategoryChange: function(e) {
         this.setState({ categoryId: e.target.value });
     },
-    handleHallCheckChange: function(e) {
-        var hallId = e.target.value - 0;
-        this.state.belongHalls[hallId] = e.target.checked;
+    handleHallCheckChange: function(index, e) {
+        this.state.belongHalls[index].checked = e.target.checked;
+        this.setState({ belongHalls: this.state.belongHalls });
     },
     handleFileSelect: function(files) {
         if (files.length === 0) return;
@@ -91,11 +90,11 @@ window.ItemEditor = React.createClass({displayName: "ItemEditor",
         var desc = React.findDOMNode(this.refs.description).value;
 
         var hallIds = [];
-        for (var id in this.state.belongHalls) {
-            if (this.state.belongHalls[id]) {
-                hallIds.push(id);
+        this.state.belongHalls.forEach(function(belongHall) {
+            if (belongHall.checked) {
+                hallIds.push(belongHall.id);
             }
-        }
+        });
 
         var url = this.state.id ? "/items/" + this.state.id : "/items/";
         this.setState({ indicatorFor: React.findDOMNode(this.refs.form), indicatorActive: true });
@@ -148,9 +147,21 @@ window.ItemEditor = React.createClass({displayName: "ItemEditor",
                 unitPrice: this.props.data.unitPrice,
                 categoryId: this.props.data.categoryId,
                 description: this.props.data.description,
-                belongHalls: ItemEditor.toMap(this.props.belongHalls),
                 url: this.props.data.id ? '/items/' + this.props.data.id + '___' + this.props.data.imageTimestamp + '/image' : '/img/unset.png',
             });
+        }
+        if (prevProps.belongHallIds !== this.props.belongHallIds ||
+                prevProps.halls !== this.props.halls) {
+            var belongSet = {};
+            this.props.belongHallIds.forEach(function(belongHallId) {
+                belongSet[belongHallId] = 'dummy';
+            });
+            var belongHalls = [];
+            this.props.halls.forEach(function(hall) {
+                hall.checked = hall.id in belongSet;
+                belongHalls.push(hall);
+            });
+            this.setState({ belongHalls: belongHalls });
         }
 
         if (this.props.visible) {
@@ -166,13 +177,13 @@ window.ItemEditor = React.createClass({displayName: "ItemEditor",
                 React.createElement("option", {key: "category_" + category.id, value: category.id}, category.name)
             );
         });
-        var halls = this.props.halls.map(function(hall) {
+        var halls = this.state.belongHalls.map(function(hall, index) {
             return (
-                React.createElement("label", {key: "hallName_" + hall.id, value: hall.id, className: "hall-name"}, 
+                React.createElement("label", {key: "hallName_" + hall.id, className: "hall-name"}, 
                     React.createElement("input", {type: "checkbox", 
                            value: hall.id, 
-                           defaultChecked: this.state.belongHalls[hall.id] ? "checked" : "", 
-                           onChange: this.handleHallCheckChange}
+                           checked: this.state.belongHalls[index].checked, 
+                           onChange: this.handleHallCheckChange.bind(this, index)}
                     ), 
                     hall.name
                 )

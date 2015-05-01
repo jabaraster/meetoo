@@ -79,10 +79,15 @@ func GetItemBelongHallByItemId(c web.C, w http.ResponseWriter, r *http.Request) 
         http.NotFound(w, r)
         return
     }
-    belongs := model.GetBelongHallByItemId(itemId)
-    var res []int64
-    for _, belong := range belongs {
-        res = append(res, belong.HallId)
+    belongs, notFound := model.GetBelongHallByItemId(itemId)
+    if notFound != nil {
+        http.NotFound(w, r)
+        return
+    }
+
+    res := make([]int64, len(belongs))
+    for idx, _ := range belongs {
+        res[idx] = belongs[idx].HallId
     }
     if len(res) == 0 {
         webutil.WriteJsonResponse(w, []interface{}{})
@@ -228,7 +233,7 @@ func findImage(item model.Item, images []model.ItemImage) *model.ItemImage {
 
 func parseBelongHallIds(commaJoinedBelongHallIds string) []int64 {
     tokens := strings.Split(commaJoinedBelongHallIds, ",")
-    var ret []int64 {}
+    var ret []int64
     for _, token := range tokens {
         id, err := util.Atoi64(token)
         if err == nil {

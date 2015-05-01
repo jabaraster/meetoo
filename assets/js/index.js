@@ -40,6 +40,7 @@ var Page = React.createClass({displayName: "Page",
             halls: [],
 
             editorData: {},
+            belongHallIds: [],
             editorVisible: false
         };
     },
@@ -49,10 +50,23 @@ var Page = React.createClass({displayName: "Page",
         }.bind(this));
     },
     handleAddClick: function() {
-        this.setState({ editorVisible: true, editorData: {} });
+        var belongHallIds = this.state.halls.map(function(hall) {
+            return hall.id
+        });
+        this.setState({ editorVisible: true, editorData: {}, belongHallIds: belongHallIds });
     },
     handleItemEditClick: function(e) {
-        this.setState({ editorVisible: true, editorData: e.data });
+        $.ajax({
+            url: '/items/' + e.data.id + '/belong-hall-ids',
+            type: 'get',
+            success: function(data) {
+                this.setState({ editorVisible: true, editorData: e.data, belongHallIds: data });
+            }.bind(this),
+            fail: function() {
+                console.log(arguments);
+            },
+            complete: function() {}
+        });
     },
     handleItemRemoveClick: function(e) {
         if (!confirm('本当に削除しますか？')) {
@@ -93,7 +107,7 @@ var Page = React.createClass({displayName: "Page",
         }.bind(this));
     },
     handleFilter: function(e) {
-        console.log(e);
+        // console.log(e);
     },
     handleLoadCategories: function(e) {
         this.setState({ categories: e.data });
@@ -117,7 +131,7 @@ var Page = React.createClass({displayName: "Page",
                             visible: this.state.editorVisible, 
                             categories: this.state.categories, 
                             halls: this.state.halls, 
-                            belongHalls: [1, 2], 
+                            belongHallIds: this.state.belongHallIds, 
                             onCloseClick: this.handleEditorCloseClick, 
                             onInsert: this.handleInsert, 
                             onUpdate: this.handleUpdate}

@@ -98,12 +98,15 @@ func GetItemImagesByItems(items []Item) []ItemImage {
     return result
 }
 
-func GetBelongHallByItemId(itemId int64) []ItemBelongHall {
+func GetBelongHallByItemId(itemId int64) ([]ItemBelongHall, NotFound) {
     var result []ItemBelongHall
     if err := db.Select(&result, db.Where("item_id","=",itemId)); err != nil {
         panic(err)
     }
-    return result
+    if len(result) == 0 {
+        return nil, NewNotFound()
+    }
+    return result, nil
 }
 
 func InsertItem(name string, unitPrice *int32, categoryId *int64, belongHallIds []int64, description *string, imageDataUrl *string) Duplicate {
@@ -228,6 +231,7 @@ func insertBelongHallIds(itemId int64, belongHallIds []int64) {
     if _, err := db.DB().Exec("delete from item_belong_hall where item_id = ?", itemId); err != nil {
         panic(err)
     }
+
     ins := make([]ItemBelongHall, len(belongHallIds))
     for idx, belongHallId := range belongHallIds {
         ins[idx] = ItemBelongHall{ ItemId: itemId, HallId: belongHallId }

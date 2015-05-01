@@ -26,7 +26,7 @@ func main() {
     goji.Post("/items/:itemId", handler.UpdateItem)
     goji.Post("/items/:itemId/remove", handler.RemoveItem)
     goji.Get ("/items/:itemIdWithTimestamp/image", handler.GetItemImageByItemId)
-    goji.Get ("/items/:itemId/belong-halls", handler.GetItemBelongHallByItemId)
+    goji.Get ("/items/:itemId/belong-hall-ids", handler.GetItemBelongHallByItemId)
     goji.Get ("/image_count", handler.CountAllItemImages)
 
     goji.Get ("/categories/", handler.GetAllCategories)
