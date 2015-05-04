@@ -107,7 +107,7 @@ var Page = React.createClass({
         }.bind(this));
     },
     handleFilter: function(e) {
-        // console.log(e);
+         console.log(e);
     },
     handleLoadCategories: function(e) {
         this.setState({ categories: e.data });

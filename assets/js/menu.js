@@ -42,7 +42,7 @@ window.MenuItemEditor = React.createClass({displayName: "MenuItemEditor",
                     if (this.props.onUpdate) this.props.onUpdate({ kind: this.props.kind });
                 }
             }.bind(this),
-            fali: function() {
+            fail: function() {
                 console.log(arguments);
             },
             complete: function() {}
@@ -160,11 +160,13 @@ window.MenuItem = React.createClass({displayName: "MenuItem",
         var classes = (this.props.data.id+'').indexOf('add-') ?
                         'id:'+this.props.data.id :
                         this.props.data.id;
+        var checkClasses = this.props.checked ? { "glyphicon glyphicon-ok check-off": true } : { "glyphicon glyphicon-ok check-on": true } ;
         return (
             React.createElement("li", {className: "MenuItem"}, 
                 React.createElement("a", {href: "", className: classes, onClick: this.handleClick}, 
                     React.createElement("i", {className: "glyphicon glyphicon-remove-sign remover", onClick: this.handleRemoveClick}), 
                     React.createElement("i", {className: "glyphicon glyphicon-pencil editor", onClick: this.handleEditClick}), 
+                    React.createElement("i", {className: "glyphicon glyphicon-ok check-" + (this.props.checked?"on":"off"), onClick: this.handleCheckClick}), 
                     React.createElement("i", {className: "glyphicon glyphicon-" + this.props.data.icon}), 
                     React.createElement("span", {className: "icon-label"}, this.props.data.name)
                 )
@@ -178,6 +180,9 @@ window.Menu = React.createClass({displayName: "Menu",
         return {
             categories: [],
             halls: [],
+
+            selectedCategories: {},
+            selectedHall: null,
 
             editorTitle: '',
             editorData: {},
@@ -239,6 +244,22 @@ window.Menu = React.createClass({displayName: "Menu",
             });
             return;
         }
+
+        if (e.kind === 'categories') {
+            if (e.data.descriptor in this.state.selectedCategories) {
+                delete this.state.selectedCategories[e.data.descriptor];
+            } else {
+                this.state.selectedCategories[e.data.descriptor] = 'dummy';
+            }
+            this.setState({ selectedCategories: this.state.selectedCategories });
+        } else if (e.kind === 'halls') {
+            if (e.data.descriptor === this.state.selectedHall) {
+                this.state.selectedHall = null;
+            } else {
+                this.state.selectedHall = e.data.descriptor;
+            }
+            this.setState({ selectedHall: this.state.selectedHall });
+        } else { throw e.kind; }
 
         if (this.props.onFilter) this.props.onFilter(e);
     },
@@ -302,9 +323,16 @@ window.Menu = React.createClass({displayName: "Menu",
     render: function() {
         var menuGeneratorGenerator = function(kind) {
             return function(data) {
+                var checked;
+                if (kind === 'categories') {
+                    checked = data.descriptor in this.state.selectedCategories;
+                } else if (kind === 'halls') {
+                    checked = data.descriptor === this.state.selectedHall;
+                } else { throw kind; }
                 return (
                     React.createElement(MenuItem, {kind: kind, 
                               data: data, 
+                              checked: checked, 
                               key: "menuItem_" + data.id, 
                               onClick: this.handleMenuItemClick, 
                               onEditClick: this.handleMenuItemEditClick, 

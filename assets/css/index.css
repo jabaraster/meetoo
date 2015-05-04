@@ -116,6 +116,14 @@
   color: rgba(0, 0, 0, 0);
   margin-right: 6px;
 }
+.MenuItem .check-on {
+  color: #6464ff;
+  margin-right: 6px;
+}
+.MenuItem .check-off {
+  color: rgba(0, 0, 0, 0);
+  margin-right: 6px;
+}
 .MenuItem:hover a[class^="id:"] .remover {
   color: #c81e1e;
 }
