@@ -76,6 +76,11 @@ window.ItemEditor = React.createClass({displayName: "ItemEditor",
             this.cancel(e);
         }
     },
+    handleFileChange: function(e) {
+        var files = e.target.files;
+        if (!files) return;
+        this.handleFileSelect(files);
+    },
     handleSubmit: function(e) {
         var name = React.findDOMNode(this.refs.name).value;
         var unitPrice = React.findDOMNode(this.refs.unitPrice).value;
@@ -249,9 +254,16 @@ window.ItemEditor = React.createClass({displayName: "ItemEditor",
                                      className: "item-image", 
                                      ref: "image"}
                                 ), 
-                                !imageSet ?
-                                React.createElement("span", null, "画像をドラッグ＆ドロップ")
-                                :null, 
+
+                                React.createElement("div", null, 
+                                    React.createElement("span", null, "画像をドラッグ＆ドロップ"), 
+                                    "または", 
+                                    React.createElement("div", {className: " file-overlay btn btn-success"}, 
+                                        React.createElement("i", {className: "glyphicon glyphicon-white glyphicon-file"}), 
+                                        "ファイルを選択", 
+                                        React.createElement("input", {type: "file", className: "dnd-file", onChange: this.handleFileChange})
+                                    )
+                                ), 
                                 React.createElement(Indicator, {buttonRef: this.state.indicatorFor, active: this.state.indicatorActive})
                             ), 
                             React.createElement("div", {className: "form-group"}, 

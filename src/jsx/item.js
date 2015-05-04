@@ -76,6 +76,11 @@ window.ItemEditor = React.createClass({
             this.cancel(e);
         }
     },
+    handleFileChange: function(e) {
+        var files = e.target.files;
+        if (!files) return;
+        this.handleFileSelect(files);
+    },
     handleSubmit: function(e) {
         var name = React.findDOMNode(this.refs.name).value;
         var unitPrice = React.findDOMNode(this.refs.unitPrice).value;
@@ -249,9 +254,16 @@ window.ItemEditor = React.createClass({
                                      className="item-image"
                                      ref="image"
                                 />
-                                {!imageSet ?
-                                <span>画像をドラッグ＆ドロップ</span>
-                                :null }
+
+                                <div>
+                                    <span>画像をドラッグ＆ドロップ</span>
+                                    または
+                                    <div className=" file-overlay btn btn-success">
+                                        <i className="glyphicon glyphicon-white glyphicon-file"></i>
+                                        ファイルを選択
+                                        <input type="file" className="dnd-file" onChange={this.handleFileChange} />
+                                    </div>
+                                </div>
                                 <Indicator buttonRef={this.state.indicatorFor} active={this.state.indicatorActive} />
                             </div>
                             <div className="form-group">

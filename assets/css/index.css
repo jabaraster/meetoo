@@ -122,3 +122,18 @@
 .MenuItem:hover a[class^="id:"] .editor {
   color: #1e961e;
 }
+input.dnd-file {
+  opacity: 0;
+  filter: progid:DXImageTransform.Microsoft.Alpha(opacity=0);
+  position: absolute;
+  right: 0;
+  top: 0;
+  margin: 0;
+  font-size: 100px;
+  cursor: pointer;
+}
+div.file-overlay {
+  display: inline-block;
+  overflow: hidden;
+  position: relative;
+}
