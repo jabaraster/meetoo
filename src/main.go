@@ -20,7 +20,7 @@ func main() {
     goji.Get("/", assets.BasicLayoutHtmlHandler("html/index.html"))
 
     // API
-    goji.Get ("/items/", handler.GetAllItems)
+    goji.Get ("/items/", handler.GetItems)
     goji.Post("/items/", handler.InsertItem)
     goji.Get ("/items/:itemId", handler.GetItemById)
     goji.Post("/items/:itemId", handler.UpdateItem)

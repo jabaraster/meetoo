@@ -15,6 +15,11 @@ import (
     "../util"
 )
 
+func GetItems(w http.ResponseWriter, r *http.Request) {
+    categories := r.FormValue("categories")
+    hall := r.FormValue("hall")
+}
+
 func GetAllItems(w http.ResponseWriter, r *http.Request) {
 //    category := r.FormValue("category")
 //    hall := r.FormValue("hall")

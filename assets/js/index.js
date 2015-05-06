@@ -5,9 +5,9 @@ var Page = React.createClass({displayName: "Page",
     statics: {
         getAllItems: function(successHandler) {
             $.ajax({
-                url: "/items/",
-                type: "get",
-                data: { category: Page.urlVars["category"], hall: Page.urlVars["hall"] },
+                url: '/items/',
+                type: 'get',
+                data: { category: Page.urlVars['category'], hall: Page.urlVars['hall'] },
                 success: function(response) {
                     successHandler(response);
                 }.bind(this),
@@ -17,6 +17,20 @@ var Page = React.createClass({displayName: "Page",
                 }
             });
         },
+//        getItems: function(parameter, successHandler) {
+//            $.ajax({
+//                url: '/items/',
+//                type: 'get',
+//                data: { hall: parameter.selectedHall, categories: parameter.selectedCategories },
+//                success: function(response) {
+//                    successHandler(response);
+//                },
+//                fail: function() {
+//                    console.log(arguments);
+//                },
+//                complete: null
+//            });
+//        },
         urlVars: function() {
             var vars = [], max = 0, hash = "", array = "";
             var url = window.location.search;

@@ -261,7 +261,13 @@ window.Menu = React.createClass({
             this.setState({ selectedHall: this.state.selectedHall });
         } else { throw e.kind; }
 
-        if (this.props.onFilter) this.props.onFilter(e);
+        var evt = {
+            kind: e.kind,
+            selected: e.data,
+            selectedCategories: this.state.selectedCategories,
+            selectedHall: this.state.selectedHall
+        };
+        if (this.props.onFilter) this.props.onFilter(evt);
     },
     handleCloseClick: function() {
         this.setState({ editorVisible: false, editorData: {} });
