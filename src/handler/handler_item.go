@@ -17,7 +17,45 @@ import (
 
 func GetItems(w http.ResponseWriter, r *http.Request) {
     categories := r.FormValue("categories")
+    fmt.Println(categories)
+
     hall := r.FormValue("hall")
+
+    var items []model.Item
+    if (len(categories) == 0) && (len(hall) == 0) {
+        items = model.GetAllItems()
+    } else {
+//        tokens := strings.Split(categories, ",")
+        items = model.GetAllItems()
+    }
+
+    images := model.GetItemImagesByItems(items)
+    var res []map[string]interface{}
+    for _, item := range items {
+        image := findImage(item, images)
+        var imageTimestamp *int64
+        if image == nil {
+            imageTimestamp = nil
+        } else {
+            base := time.Date(1900, time.January, 1, 0, 0, 0, 0, time.UTC)
+            i := image.Created.Sub(base).Nanoseconds()
+            imageTimestamp = &i
+        }
+        res = append(res, map[string]interface{}{
+            "id": item.Id,
+            "name": item.Name,
+            "categoryId": item.CategoryId,
+            "unitPrice": item.UnitPrice,
+            "description": item.Description,
+            "imageTimestamp": imageTimestamp,
+        });
+    }
+
+    if len(res) == 0 {
+        webutil.WriteJsonResponse(w, []interface{}{})
+    } else {
+        webutil.WriteJsonResponse(w, res)
+    }
 }
 
 func GetAllItems(w http.ResponseWriter, r *http.Request) {

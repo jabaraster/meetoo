@@ -17,20 +17,24 @@ var Page = React.createClass({displayName: "Page",
                 }
             });
         },
-//        getItems: function(parameter, successHandler) {
-//            $.ajax({
-//                url: '/items/',
-//                type: 'get',
-//                data: { hall: parameter.selectedHall, categories: parameter.selectedCategories },
-//                success: function(response) {
-//                    successHandler(response);
-//                },
-//                fail: function() {
-//                    console.log(arguments);
-//                },
-//                complete: null
-//            });
-//        },
+        getItems: function(parameter, successHandler) {
+            var categories = [];
+            for (var d in parameter.selectedCategories) {
+                categories.push(parameter.selectedCategories[d].id);
+            }
+            $.ajax({
+                url: '/items/',
+                type: 'get',
+                data: { hall: parameter.selectedHall, categories: categories.join(',') },
+                success: function(response) {
+                    successHandler(response);
+                },
+                fail: function() {
+                    console.log(arguments);
+                },
+                complete: null
+            });
+        },
         urlVars: function() {
             var vars = [], max = 0, hash = "", array = "";
             var url = window.location.search;
@@ -53,13 +57,16 @@ var Page = React.createClass({displayName: "Page",
             categories: [],
             halls: [],
 
+            selectedHall: null,
+            selectedCategories: [],
+
             editorData: {},
             belongHallIds: [],
             editorVisible: false
         };
     },
     componentDidMount: function() {
-        Page.getAllItems(function(response) {
+        Page.getItems({}, function(response) {
             this.setState({ items: response });
         }.bind(this));
     },
@@ -111,17 +118,19 @@ var Page = React.createClass({displayName: "Page",
         this.setState({ editorData: {}, editorVisible: false });
     },
     handleInsert: function() {
-        Page.getAllItems(function(response) {
+        Page.getItems({}, function(response) {
             this.setState({ items: response, editorData: {}, editorVisible: false });
         }.bind(this));
     },
     handleUpdate: function() {
-        Page.getAllItems(function(response) {
+        Page.getItems({}, function(response) {
             this.setState({ items: response, editorData: {}, editorVisible: false });
         }.bind(this));
     },
     handleFilter: function(e) {
-         console.log(e);
+        Page.getItems(e, function(response) {
+            this.setState({ items: response, editorData: {}, editorVisible: false });
+        }.bind(this));
     },
     handleLoadCategories: function(e) {
         this.setState({ categories: e.data });

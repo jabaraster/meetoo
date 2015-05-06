@@ -249,14 +249,14 @@ window.Menu = React.createClass({
             if (e.data.descriptor in this.state.selectedCategories) {
                 delete this.state.selectedCategories[e.data.descriptor];
             } else {
-                this.state.selectedCategories[e.data.descriptor] = 'dummy';
+                this.state.selectedCategories[e.data.descriptor] = e.data;
             }
             this.setState({ selectedCategories: this.state.selectedCategories });
         } else if (e.kind === 'halls') {
             if (e.data.descriptor === this.state.selectedHall) {
                 this.state.selectedHall = null;
             } else {
-                this.state.selectedHall = e.data.descriptor;
+                this.state.selectedHall = e.data;
             }
             this.setState({ selectedHall: this.state.selectedHall });
         } else { throw e.kind; }
