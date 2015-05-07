@@ -16,18 +16,13 @@ import (
 )
 
 func GetItems(w http.ResponseWriter, r *http.Request) {
-    categories := r.FormValue("categories")
-    fmt.Println(categories)
+    categoryIdsStr := r.FormValue("categories")
+    hallIdStr := r.FormValue("hall")
 
-    hall := r.FormValue("hall")
+    categoryIds := util.Atoi64s(strings.Split(categoryIdsStr, ","))
+    hallId := util.MustAtoi64(hallIdStr)
 
-    var items []model.Item
-    if (len(categories) == 0) && (len(hall) == 0) {
-        items = model.GetAllItems()
-    } else {
-//        tokens := strings.Split(categories, ",")
-        items = model.GetAllItems()
-    }
+    items := model.GetItems(hallId, categoryIds)
 
     images := model.GetItemImagesByItems(items)
     var res []map[string]interface{}

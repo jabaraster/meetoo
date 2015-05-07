@@ -118,3 +118,14 @@ func checkNameDuplicateForUpdate(tableType interface{}, updateTargetId int64, na
     }
     return c == 0
 }
+
+func getInWhereInt(columnName string, values []int64) *genmai.Condition {
+    if len(values) == 0 {
+        return db.Where("1","=","1")
+    }
+    w := db.Where(columnName,"=",values[0])
+    for _,value := range values[1:] {
+        w = w.Or(db.Where(columnName,"=",value))
+    }
+    return w
+}

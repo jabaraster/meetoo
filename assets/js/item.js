@@ -323,7 +323,7 @@ window.Item = React.createClass({displayName: "Item",
                 React.createElement("fieldset", {className: "fields"}, 
                     React.createElement("legend", null, 
                         React.createElement("span", {className: "item-name"}, this.props.data.name), 
-                        React.createElement("span", {className: "item-unit-price"}, "単価：", this.props.data.unitPrice, "円")
+                        React.createElement("span", {className: "item-unit-price"}, "単価：", String(this.props.data.unitPrice).replace( /(\d)(?=(\d\d\d)+(?!\d))/g, '$1,'), "円")
                     ), 
                     React.createElement("img", {src: imageUrl, className: "item-image"}), 
                     React.createElement("p", {className: "item-description"}, this.props.data.description)

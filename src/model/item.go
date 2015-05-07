@@ -57,6 +57,18 @@ func (e *ItemImage) BeforeUpdate() error {
     return nil
 }
 
+func GetItems(hallId *int64, categoryIds []int64) []Item {
+    if len(categoryIds) == 0 {
+        return GetAllItems()
+    }
+
+    var items []Item
+    if err := db.Select(&items, getInWhereInt("category_id",categoryIds)); err != nil {
+        panic(err)
+    }
+    return items
+}
+
 func GetAllItems() []Item {
     var item []Item
     if err := db.Select(&item); err != nil {
