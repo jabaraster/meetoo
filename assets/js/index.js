@@ -88,8 +88,7 @@ var Page = React.createClass({displayName: "Page",
             }.bind(this),
             fail: function() {
                 console.log(arguments);
-            },
-            complete: function() {}
+            }
         });
     },
     handleItemRemoveClick: function(e) {
@@ -121,18 +120,25 @@ var Page = React.createClass({displayName: "Page",
         this.setState({ editorData: {}, editorVisible: false });
     },
     handleInsert: function() {
-        Page.getItems({}, function(response) {
+        Page.getItems(this.state, function(response) {
             this.setState({ items: response, editorData: {}, editorVisible: false });
         }.bind(this));
     },
     handleUpdate: function() {
-        Page.getItems({}, function(response) {
+        Page.getItems(this.state, function(response) {
             this.setState({ items: response, editorData: {}, editorVisible: false });
         }.bind(this));
     },
     handleFilter: function(e) {
+        console.log(e);
         Page.getItems(e, function(response) {
-            this.setState({ items: response, editorData: {}, editorVisible: false });
+            this.setState({
+                items: response,
+                editorData: {},
+                editorVisible: false,
+                selectedHall: e.selectedHall,
+                selectedCategories: e.selectedCategories
+            });
         }.bind(this));
     },
     handleLoadCategories: function(e) {
@@ -142,11 +148,21 @@ var Page = React.createClass({displayName: "Page",
         this.setState({ halls: e.data });
     },
     render: function() {
+        var selectedCategories = [];
+        for (var p in this.state.selectedCategories) {
+            selectedCategories.push(this.state.selectedCategories[p].name);
+        }
+        var selectedHall = this.state.selectedHall ? '会場：' + this.state.selectedHall.name : '' ;
         return (
             React.createElement("div", {className: "Page container"}, 
                 React.createElement(Menu, {onFilter: this.handleFilter, 
                       onLoadCategories: this.handleLoadCategories, 
                       onLoadHalls: this.handleLoadHalls}
+                ), 
+                React.createElement("div", {className: "status"}, 
+                    "フィルタ:", 
+                    React.createElement("span", {className: "selected-hall"}, selectedHall), 
+                    React.createElement("span", {className: "selected-categories"}, selectedCategories.join(','))
                 ), 
                 React.createElement(ItemList, {items: this.state.items, 
                           onAddClick: this.handleAddClick, 

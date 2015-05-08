@@ -144,9 +144,12 @@ func InsertItem(name string, unitPrice *int32, categoryId *int64, belongHallIds 
         CategoryId: categoryId,
         Description: description,
     }
+    fmt.Println("★★★★★★★★★★★")
+    fmt.Println(item.Id)
     if _, err := db.Insert(&item); err != nil {
         panic(err)
     }
+    fmt.Println(item.Id)
 
     insertItemImage(item.Id, imageDataUrl)
     insertBelongHallIds(item.Id, belongHallIds)

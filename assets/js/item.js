@@ -133,9 +133,7 @@ window.ItemEditor = React.createClass({displayName: "ItemEditor",
             fail: function() {
                 this.setState({ indicatorActive: false });
                 console.log(arguments);
-            },
-            complete: function() {
-            }.bind(this)
+            }
         });
         e.preventDefault();
     },
@@ -176,6 +174,7 @@ window.ItemEditor = React.createClass({displayName: "ItemEditor",
         }
     },
     render: function() {
+        console.log(this.state);
         var categoriesData = [{ id:'null', name: '(カテゴリなし)' }].concat(this.props.categories.concat());
         var categories = categoriesData.map(function(category) {
             return (

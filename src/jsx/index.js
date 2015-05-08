@@ -88,8 +88,7 @@ var Page = React.createClass({
             }.bind(this),
             fail: function() {
                 console.log(arguments);
-            },
-            complete: function() {}
+            }
         });
     },
     handleItemRemoveClick: function(e) {
@@ -121,18 +120,25 @@ var Page = React.createClass({
         this.setState({ editorData: {}, editorVisible: false });
     },
     handleInsert: function() {
-        Page.getItems({}, function(response) {
+        Page.getItems(this.state, function(response) {
             this.setState({ items: response, editorData: {}, editorVisible: false });
         }.bind(this));
     },
     handleUpdate: function() {
-        Page.getItems({}, function(response) {
+        Page.getItems(this.state, function(response) {
             this.setState({ items: response, editorData: {}, editorVisible: false });
         }.bind(this));
     },
     handleFilter: function(e) {
+        console.log(e);
         Page.getItems(e, function(response) {
-            this.setState({ items: response, editorData: {}, editorVisible: false });
+            this.setState({
+                items: response,
+                editorData: {},
+                editorVisible: false,
+                selectedHall: e.selectedHall,
+                selectedCategories: e.selectedCategories
+            });
         }.bind(this));
     },
     handleLoadCategories: function(e) {
@@ -142,12 +148,22 @@ var Page = React.createClass({
         this.setState({ halls: e.data });
     },
     render: function() {
+        var selectedCategories = [];
+        for (var p in this.state.selectedCategories) {
+            selectedCategories.push(this.state.selectedCategories[p].name);
+        }
+        var selectedHall = this.state.selectedHall ? '会場：' + this.state.selectedHall.name : '' ;
         return (
             <div className="Page container">
                 <Menu onFilter={this.handleFilter}
                       onLoadCategories={this.handleLoadCategories}
                       onLoadHalls={this.handleLoadHalls}
                 />
+                <div className="status">
+                    フィルタ:
+                    <span className="selected-hall">{selectedHall}</span>
+                    <span className="selected-categories">{selectedCategories.join(',')}</span>
+                </div>
                 <ItemList items={this.state.items}
                           onAddClick={this.handleAddClick}
                           onItemEditClick={this.handleItemEditClick}
