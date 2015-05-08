@@ -174,7 +174,6 @@ window.ItemEditor = React.createClass({
         }
     },
     render: function() {
-        console.log(this.state);
         var categoriesData = [{ id:'null', name: '(カテゴリなし)' }].concat(this.props.categories.concat());
         var categories = categoriesData.map(function(category) {
             return (
