@@ -58,12 +58,21 @@ func (e *ItemImage) BeforeUpdate() error {
 }
 
 func GetItems(hallId *int64, categoryIds []int64) []Item {
-    if len(categoryIds) == 0 {
+    if (hallId == nil) && (len(categoryIds) == 0) {
         return GetAllItems()
     }
 
+    if hallId == nil {
+        var items []Item
+        if err := db.Select(&items, getInWhereInt("category_id",categoryIds)); err != nil {
+            panic(err)
+        }
+        return items
+    }
+
+    belongItemIds := getHallBelongItemIds(*hallId)
     var items []Item
-    if err := db.Select(&items, getInWhereInt("category_id",categoryIds)); err != nil {
+    if err := db.Select(&items, getInWhereInt("category_id",categoryIds).And(getInWhereInt("id",belongItemIds))); err != nil {
         panic(err)
     }
     return items
@@ -169,6 +178,7 @@ func UpdateItem(itemId int64, name string, unitPrice *int32, categoryId *int64, 
         removeItemImageByItemId(itemId)
         insertItemImage(itemId, imageDataUrl)
     }
+    removeBelongHallIdsByItemId(itemId)
     insertBelongHallIds(itemId, belongHallIds)
 
     return nil, nil
@@ -198,6 +208,7 @@ func GetItemById(itemId int64) (*Item, NotFound) {
 
 func RemoveItemById(itemId int64) {
     removeItemImageByItemId(itemId)
+    removeBelongHallIdsByItemId(itemId)
     if _, err := db.Delete(&Item{ Id: itemId }); err != nil {
         fmt.Println(err)
     }
@@ -211,6 +222,12 @@ func createItemTables() {
 
 func removeItemImageByItemId(itemId int64) {
     if _, err := db.DB().Exec("delete from item_image where item_id = ?", itemId); err != nil {
+        panic(err)
+    }
+}
+
+func removeBelongHallIdsByItemId(itemId int64) {
+    if _, err := db.DB().Exec("delete from item_belong_hall where item_id = ?", itemId); err != nil {
         panic(err)
     }
 }
@@ -251,4 +268,16 @@ func insertBelongHallIds(itemId int64, belongHallIds []int64) {
     if _, err := db.Insert(ins); err != nil {
         panic(err)
     }
+}
+
+func getHallBelongItemIds(hallId int64) []int64 {
+    var result []ItemBelongHall
+    if err := db.Select(&result, db.Where("hall_id","=",hallId)); err != nil {
+        panic(err)
+    }
+    ret := make([]int64, len(result))
+    for idx, itemBelongHall := range result {
+        ret[idx] = itemBelongHall.ItemId
+    }
+    return ret
 }

@@ -160,7 +160,6 @@ window.MenuItem = React.createClass({displayName: "MenuItem",
         var classes = (this.props.data.id+'').indexOf('add-') ?
                         'id:'+this.props.data.id :
                         this.props.data.id;
-        var checkClasses = this.props.checked ? { "glyphicon glyphicon-ok check-off": true } : { "glyphicon glyphicon-ok check-on": true } ;
         return (
             React.createElement("li", {className: "MenuItem"}, 
                 React.createElement("a", {href: "", className: classes, onClick: this.handleClick}, 
@@ -245,29 +244,36 @@ window.Menu = React.createClass({displayName: "Menu",
             return;
         }
 
+        var f = function() {
+            var evt = {
+                kind: e.kind,
+                selected: e.data,
+                selectedCategories: this.state.selectedCategories,
+                selectedHall: this.state.selectedHall
+            };
+            if (this.props.onFilter) this.props.onFilter(evt);
+        }.bind(this);
+
         if (e.kind === 'categories') {
             if (e.data.descriptor in this.state.selectedCategories) {
                 delete this.state.selectedCategories[e.data.descriptor];
             } else {
                 this.state.selectedCategories[e.data.descriptor] = e.data;
             }
-            this.setState({ selectedCategories: this.state.selectedCategories });
+            this.setState({ selectedCategories: this.state.selectedCategories }, f);
+
         } else if (e.kind === 'halls') {
-            if (e.data.descriptor === this.state.selectedHall) {
-                this.state.selectedHall = null;
+            if (!this.state.selectedHall) {
+                this.setState({ selectedHall: e.data }, f);
+
+            } else if (e.data.id === this.state.selectedHall.id) {
+                this.setState({ selectedHall: null }, f);
+
             } else {
-                this.state.selectedHall = e.data;
+                this.setState({ selectedHall: e.data }, f);
             }
-            this.setState({ selectedHall: this.state.selectedHall });
         } else { throw e.kind; }
 
-        var evt = {
-            kind: e.kind,
-            selected: e.data,
-            selectedCategories: this.state.selectedCategories,
-            selectedHall: this.state.selectedHall
-        };
-        if (this.props.onFilter) this.props.onFilter(evt);
     },
     handleCloseClick: function() {
         this.setState({ editorVisible: false, editorData: {} });
@@ -333,7 +339,7 @@ window.Menu = React.createClass({displayName: "Menu",
                 if (kind === 'categories') {
                     checked = data.descriptor in this.state.selectedCategories;
                 } else if (kind === 'halls') {
-                    checked = data.descriptor === this.state.selectedHall;
+                    checked = this.state.selectedHall ? data.id === this.state.selectedHall.id : false ;
                 } else { throw kind; }
                 return (
                     React.createElement(MenuItem, {kind: kind, 

@@ -25,7 +25,10 @@ var Page = React.createClass({displayName: "Page",
             $.ajax({
                 url: '/items/',
                 type: 'get',
-                data: { hall: parameter.selectedHall, categories: categories.join(',') },
+                data: {
+                    hall: parameter.selectedHall ? parameter.selectedHall.id : null ,
+                    categories: categories.join(',')
+                },
                 success: function(response) {
                     successHandler(response);
                 },
