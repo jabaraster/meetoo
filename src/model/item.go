@@ -164,7 +164,7 @@ func InsertItem(name string, unitPrice *int32, categoryId *int64, belongHallIds 
 }
 
 func UpdateItem(itemId int64, name string, unitPrice *int32, categoryId *int64, belongHallIds []int64, description *string, imageDataUrl *string) (Duplicate, NotFound) {
-    if !checkNameDuplicateForUpdate(&Category{}, itemId, name) {
+    if !checkNameDuplicateForUpdate(&Item{}, itemId, name) {
         return NewDuplicate("name", name), nil
     }
 

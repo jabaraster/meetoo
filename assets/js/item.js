@@ -196,7 +196,6 @@ window.ItemEditor = React.createClass({displayName: "ItemEditor",
         return (
             React.createElement("div", {className: "ItemEditor"}, 
               React.createElement("div", {className: "item-editor-dialog modal fade"}, 
-                React.createElement(Message, {visible: this.state.messageVisible, text: this.state.messageText}), 
                 React.createElement("div", {className: "modal-dialog"}, 
                     React.createElement("div", {className: "modal-content"}, 
                       React.createElement("div", {className: "modal-header"}, 
@@ -206,6 +205,8 @@ window.ItemEditor = React.createClass({displayName: "ItemEditor",
                         React.createElement("h4", {className: ".item-editor-dialog-title modal-title"}, "アイテム編集")
                       ), 
                       React.createElement("div", {className: "modal-body"}, 
+
+                        React.createElement("div", {className: "message"}, this.state.messageText), 
 
                         React.createElement("form", {className: "item-edit-form", 
                               ref: "form", 

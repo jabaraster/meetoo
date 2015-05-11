@@ -4,12 +4,12 @@ import (
     "testing"
 )
 
-func TestGetItems(t *testing.T) {
-    items := GetItems(nil, []int64{1,2,3})
-    if len(items) == 0 {
-        t.Error(items)
-    }
-}
+// func TestGetItems(t *testing.T) {
+//     items := GetItems(nil, []int64{1,2,3})
+//     if len(items) == 0 {
+//         t.Error(items)
+//     }
+// }
 
 func TestGetItemImagesByItems(t *testing.T) {
     name := "アイテム0"
@@ -23,14 +23,6 @@ func TestGetItemImagesByItems(t *testing.T) {
     if len(items) != 1 {
         t.Error(items)
     }
-}
-
-func getItemByName(name string) *Item {
-    var result []Item
-    if err := db.Select(&result, db.Where("name","=",name)); err != nil {
-        panic(err)
-    }
-    return &result[0]
 }
 
 const (

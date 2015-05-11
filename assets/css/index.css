@@ -28,6 +28,10 @@
   cursor: pointer;
   margin-right: 6px;
 }
+.ItemEditor .message {
+  font-size: 120%;
+  font-weight: 120%;
+}
 .Item {
   padding: 6px;
   padding-left: 10px;

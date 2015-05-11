@@ -196,7 +196,6 @@ window.ItemEditor = React.createClass({
         return (
             <div className="ItemEditor">
               <div className="item-editor-dialog modal fade">
-                <Message visible={this.state.messageVisible} text={this.state.messageText} />
                 <div className="modal-dialog">
                     <div className="modal-content">
                       <div className="modal-header">
@@ -206,6 +205,8 @@ window.ItemEditor = React.createClass({
                         <h4 className=".item-editor-dialog-title modal-title">アイテム編集</h4>
                       </div>
                       <div className="modal-body">
+
+                        <div className="message">{this.state.messageText}</div>
 
                         <form className="item-edit-form"
                               ref="form"
