@@ -144,12 +144,18 @@ func InsertItem(name string, unitPrice *int32, categoryId *int64, belongHallIds 
         CategoryId: categoryId,
         Description: description,
     }
-    fmt.Println("★★★★★★★★★★★")
-    fmt.Println(item.Id)
     if _, err := db.Insert(&item); err != nil {
         panic(err)
     }
-    fmt.Println(item.Id)
+
+    // SELECT last_insert_rowid()が期待する値を返さないため
+    // item.Idに不正な値が格納されてしまっている.
+    // このためこの後のINSERTが不正なデータ登録となってしまう.
+    // 原因が分からず根本解決策が見出だせないため、
+    // 場当たり対応としてDBからデータを引いてくるようにする.
+    // tx()がうまく動かないのと関係ありそうなのだが・・・
+    i := getItemByName(name)
+    item.Id = i.Id
 
     insertItemImage(item.Id, imageDataUrl)
     insertBelongHallIds(item.Id, belongHallIds)
@@ -215,6 +221,20 @@ func RemoveItemById(itemId int64) {
     if _, err := db.Delete(&Item{ Id: itemId }); err != nil {
         fmt.Println(err)
     }
+}
+
+func getItemByName(name string) *Item {
+    var result []Item
+    if err := db.Select(&result, db.Where("name","=",name)); err != nil {
+        panic(err)
+    }
+    switch (len(result)) {
+    case 0:
+        return nil
+    case 1:
+        return &result[0]
+    }
+    panic(result)
 }
 
 func createItemTables() {

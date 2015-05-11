@@ -149,7 +149,7 @@ window.ItemEditor = React.createClass({displayName: "ItemEditor",
                 name: this.props.data.name,
                 unitPrice: this.props.data.unitPrice,
                 categoryId: this.props.data.categoryId,
-                description: this.props.data.description,
+                description: this.props.data.description ? this.props.data.description : '' , // textareaのときはこうしないと空値が反映されない
                 url: this.props.data.id ? '/items/' + this.props.data.id + '___' + this.props.data.imageTimestamp + '/image' : '/img/unset.png',
             });
         }
@@ -217,8 +217,8 @@ window.ItemEditor = React.createClass({displayName: "ItemEditor",
                                        ref: "name", 
                                        className: "item-name form-control", 
                                        value: this.state.name, 
-                                       onChange: this.handleNameChange, 
-                                       placeholder: "アイテム名"}
+                                       placeholder: "アイテム名", 
+                                       onChange: this.handleNameChange}
                                 )
                             ), 
                             React.createElement("div", {className: "form-group"}, 
@@ -226,8 +226,8 @@ window.ItemEditor = React.createClass({displayName: "ItemEditor",
                                        ref: "unitPrice", 
                                        className: "form-control", 
                                        value: this.state.unitPrice, 
-                                       onChange: this.handleUnitPriceChange, 
-                                       placeholder: "単価"}
+                                       placeholder: "単価", 
+                                       onChange: this.handleUnitPriceChange}
                                 )
                             ), 
                             React.createElement("div", {className: "form-group"}, 
@@ -242,9 +242,9 @@ window.ItemEditor = React.createClass({displayName: "ItemEditor",
                             React.createElement("div", {className: "form-group"}, 
                                 React.createElement("textarea", {className: "item-description form-control", 
                                           ref: "description", 
+                                          value: this.state.description, 
                                           placeholder: "説明", 
-                                          onChange: this.handleDescriptionChange, 
-                                          value: this.state.description}
+                                          onChange: this.handleDescriptionChange}
                                 )
                             ), 
                             React.createElement("div", {className: "form-group"}, 
