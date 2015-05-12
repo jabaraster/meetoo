@@ -293,7 +293,6 @@ window.ItemEditor = React.createClass({displayName: "ItemEditor",
 window.Item = React.createClass({displayName: "Item",
     handleItemClick: function(e) {
         try {
-            console.log(e);
             if (this.props.onItemClick) this.props.onItemClick({ data: this.props.data });
         } finally {
             e.preventDefault();
@@ -354,6 +353,9 @@ window.ItemList = React.createClass({displayName: "ItemList",
     handleAddClick: function() {
         if (this.props.onAddClick) this.props.onAddClick();
     },
+    handleItemClick: function(e) {
+        if (this.props.onItemClick) this.props.onItemClick(e);
+    },
     handleItemEditClick: function(e) {
         if (this.props.onItemEditClick) this.props.onItemEditClick(e);
     },
@@ -367,6 +369,7 @@ window.ItemList = React.createClass({displayName: "ItemList",
                     React.createElement(Item, {key: "item_" + item.id, 
                           data: item, 
                           editable: this.props.editable, 
+                          onItemClick: this.handleItemClick, 
                           onEditClick: this.handleItemEditClick, 
                           onRemoveClick: this.handleItemRemoveClick}
                     )

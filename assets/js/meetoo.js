@@ -1,22 +1,25 @@
 (function($) {
 "use strict";
 
+var Estimate = React.createClass({displayName: "Estimate",
+    render: function() {
+        var items = this.props.data.map(function(item) {
+            return (
+                React.createElement("tr", null, React.createElement("td", null, item.name))
+            );
+        });
+        return (
+            React.createElement("div", {className: "Estimate col-md-6"}, 
+                React.createElement("table", {className: "table"}, 
+                    items
+                )
+            )
+        );
+    }
+});
+
 var Page = React.createClass({displayName: "Page",
     statics: {
-        getAllItems: function(successHandler) {
-            $.ajax({
-                url: '/items/',
-                type: 'get',
-                data: { category: Page.urlVars['category'], hall: Page.urlVars['hall'] },
-                success: function(response) {
-                    successHandler(response);
-                }.bind(this),
-
-                fail: function() {
-                    console.log(arguments);
-                }
-            });
-        },
         getItems: function(parameter, successHandler) {
             var categories = [];
             for (var d in parameter.selectedCategories) {
@@ -39,7 +42,10 @@ var Page = React.createClass({displayName: "Page",
             });
         },
         urlVars: function() {
-            var vars = [], max = 0, hash = "", array = "";
+            var vars = [];
+            var max = 0;
+            var hash = '';
+            var array = '';
             var url = window.location.search;
 
             //?を取り除くため、1から始める。複数のクエリ文字列に対応するため、&で区切る
@@ -62,12 +68,18 @@ var Page = React.createClass({displayName: "Page",
 
             selectedHall: null,
             selectedCategories: [],
+
+            estimateItems: []
         };
     },
     componentDidMount: function() {
         Page.getItems({}, function(response) {
             this.setState({ items: response });
         }.bind(this));
+    },
+    handleItemClick: function(e) {
+        this.state.estimateItems.push(e.data);
+        this.setState({ estimateItems: this.state.estimateItems });
     },
     handleFilter: function(e) {
         Page.getItems(e, function(response) {
@@ -106,10 +118,10 @@ var Page = React.createClass({displayName: "Page",
                 ), 
                 React.createElement(ItemList, {items: this.state.items, 
                           editable: false, 
-                          cols: "6"}
+                          cols: "6", 
+                          onItemClick: this.handleItemClick}
                 ), 
-                React.createElement("div", {className: "col-md-6", style: { background: 'rgba(255,0,0,.3)', height: '500px'}}
-                )
+                React.createElement(Estimate, {data: this.state.estimateItems})
             )
         )
     },
