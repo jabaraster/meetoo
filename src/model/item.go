@@ -30,19 +30,15 @@ type ItemBelongHall struct {
 func (e *Item) setCreatedAt(t time.Time) {
     e.Created = t
 }
-
 func (e *Item) setUpdatedAt(t time.Time) {
     e.Updated = t
 }
-
 func (e *Item) BeforeInsert() error {
     return beforeInsertCore(e)
 }
-
 func (e *Item) BeforeUpdate() error {
     return beforeUpdateCore(e)
 }
-
 func (e *ItemImage) setCreatedAt(t time.Time) {
     e.Created = t
 }
@@ -135,6 +131,7 @@ func InsertItem(name string, unitPrice *int32, categoryId *int64, belongHallIds 
         return NewDuplicate("name", name)
     }
 
+// トランザクションを仕込むとDB操作でエラーが置きてプロセスが停止する. 困った.
 //    defer tx()
 //    beginTx();
 
