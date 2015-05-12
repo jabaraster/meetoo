@@ -18,6 +18,7 @@ func main() {
     // htmlページ
     goji.Get("", http.RedirectHandler("/", http.StatusSeeOther))
     goji.Get("/", assets.BasicLayoutHtmlHandler("html/index.html"))
+    goji.Get("/meetoo", assets.BasicLayoutHtmlHandler("html/meetoo.html"))
 
     // API
     goji.Get ("/items/", handler.GetItems)

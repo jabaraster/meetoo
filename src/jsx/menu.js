@@ -163,8 +163,10 @@ window.MenuItem = React.createClass({
         return (
             <li className="MenuItem">
                 <a href="" className={classes} onClick={this.handleClick}>
-                    <i className="glyphicon glyphicon-remove-sign remover" onClick={this.handleRemoveClick} />
-                    <i className="glyphicon glyphicon-pencil editor" onClick={this.handleEditClick} />
+                    {this.props.editable ?
+                    <i className="glyphicon glyphicon-remove-sign remover" onClick={this.handleRemoveClick} /> : null }
+                    {this.props.editable ?
+                    <i className="glyphicon glyphicon-pencil editor" onClick={this.handleEditClick} /> : null }
                     <i className={"glyphicon glyphicon-ok check-" + (this.props.checked?"on":"off")} onClick={this.handleCheckClick} />
                     <i className={"glyphicon glyphicon-" + this.props.data.icon} />
                     <span className="icon-label">{this.props.data.name}</span>
@@ -195,7 +197,9 @@ window.Menu = React.createClass({
             success: function(data) {
                 if (this.props.onLoadCategories) this.props.onLoadCategories({ data: data });
                 var cp = data.concat();
-                cp.push({ id: "add-category", name:"(追加)", icon: "plus" });
+                if (this.editable) {
+                    cp.push({ id: "add-category", name:"(追加)", icon: "plus" });
+                }
                 this.setState({ categories: cp });
             }.bind(this),
             fail: function() {
@@ -211,7 +215,9 @@ window.Menu = React.createClass({
             success: function(data) {
                 if (this.props.onLoadHalls) this.props.onLoadHalls({ data: data });
                 var cp = data.concat();
-                cp.push({ id: "add-hall", name:"(追加)", icon: "plus" });
+                if (this.props.editable) {
+                    cp.push({ id: "add-hall", name:"(追加)", icon: "plus" });
+                }
                 this.setState({ halls: cp });
             }.bind(this),
             fail: function() {

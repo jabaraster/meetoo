@@ -291,8 +291,22 @@ window.ItemEditor = React.createClass({displayName: "ItemEditor",
 });
 
 window.Item = React.createClass({displayName: "Item",
-    handleClick: function(e) {
-        if (this.props.onEditClick) this.props.onEditClick({ data: this.props.data });
+    handleItemClick: function(e) {
+        try {
+            console.log(e);
+            if (this.props.onItemClick) this.props.onItemClick({ data: this.props.data });
+        } finally {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    },
+    handleEditClick: function(e) {
+        try {
+            if (this.props.onEditClick) this.props.onEditClick({ data: this.props.data });
+        } finally {
+            e.preventDefault();
+            e.stopPropagation();
+        }
     },
     handleRemoveClick: function(e) {
         try {
@@ -310,14 +324,18 @@ window.Item = React.createClass({displayName: "Item",
             imageUrl = '/img/unset.png';
         }
         return (
-            React.createElement("div", {className: "Item"}, 
+            React.createElement("div", {className: "Item", onClick: this.handleItemClick}, 
                 React.createElement("div", {className: "tool-box"}, 
-                    React.createElement("button", {className: "btn", onClick: this.handleClick}, 
+                    this.props.editable ?
+                    React.createElement("button", {className: "btn", onClick: this.handleEditClick}, 
                         React.createElement("i", {className: "glyphicon glyphicon-pencil"})
-                    ), 
+                    ) : null, 
+                    
+                    this.props.editable ?
                     React.createElement("button", {className: "btn", onClick: this.handleRemoveClick}, 
                         React.createElement("i", {className: "glyphicon glyphicon-remove-sign"})
-                    )
+                    ) : null
+                    
                 ), 
                 React.createElement("fieldset", {className: "fields"}, 
                     React.createElement("legend", null, 
@@ -348,18 +366,25 @@ window.ItemList = React.createClass({displayName: "ItemList",
                 React.createElement("li", {key: "item-list_" + item.id}, 
                     React.createElement(Item, {key: "item_" + item.id, 
                           data: item, 
+                          editable: this.props.editable, 
                           onEditClick: this.handleItemEditClick, 
                           onRemoveClick: this.handleItemRemoveClick}
                     )
                 )
             );
         }.bind(this));
+        var classes = {
+            "ItemList": true
+        };
+        classes["col-md-"+(this.props.cols ? this.props.cols : 12)] = true;
         return (
-            React.createElement("div", {className: "ItemList col-md-9"}, 
+            React.createElement("div", {className: React.addons.classSet(classes)}, 
                 React.createElement("div", {className: "tool-box"}, 
+                    this.props.editable ?
                     React.createElement("button", {className: "btn btn-default tool-box-button", onClick: this.handleAddClick}, 
                         React.createElement("i", {className: "glyphicon glyphicon-plus"})
-                    )
+                    ) : null
+                    
                 ), 
                 React.createElement("h2", {className: this.props.items.length === 0 ? 'add-message' : 'hidden'}, "アイテムを追加して下さい。"), 
                 React.createElement("ul", {className: "item-list"}, 

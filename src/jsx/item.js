@@ -291,8 +291,22 @@ window.ItemEditor = React.createClass({
 });
 
 window.Item = React.createClass({
-    handleClick: function(e) {
-        if (this.props.onEditClick) this.props.onEditClick({ data: this.props.data });
+    handleItemClick: function(e) {
+        try {
+            console.log(e);
+            if (this.props.onItemClick) this.props.onItemClick({ data: this.props.data });
+        } finally {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    },
+    handleEditClick: function(e) {
+        try {
+            if (this.props.onEditClick) this.props.onEditClick({ data: this.props.data });
+        } finally {
+            e.preventDefault();
+            e.stopPropagation();
+        }
     },
     handleRemoveClick: function(e) {
         try {
@@ -310,14 +324,18 @@ window.Item = React.createClass({
             imageUrl = '/img/unset.png';
         }
         return (
-            <div className="Item">
+            <div className="Item" onClick={this.handleItemClick}>
                 <div className="tool-box">
-                    <button className="btn" onClick={this.handleClick}>
+                    {this.props.editable ?
+                    <button className="btn" onClick={this.handleEditClick}>
                         <i className="glyphicon glyphicon-pencil" />
-                    </button>
+                    </button> : null
+                    }
+                    {this.props.editable ?
                     <button className="btn" onClick={this.handleRemoveClick}>
                         <i className="glyphicon glyphicon-remove-sign" />
-                    </button>
+                    </button> : null
+                    }
                 </div>
                 <fieldset className="fields">
                     <legend>
@@ -348,18 +366,25 @@ window.ItemList = React.createClass({
                 <li key={"item-list_" + item.id}>
                     <Item key={"item_" + item.id}
                           data={item}
+                          editable={this.props.editable}
                           onEditClick={this.handleItemEditClick}
                           onRemoveClick={this.handleItemRemoveClick}
                     />
                 </li>
             );
         }.bind(this));
+        var classes = {
+            "ItemList": true
+        };
+        classes["col-md-"+(this.props.cols ? this.props.cols : 12)] = true;
         return (
-            <div className="ItemList col-md-9">
+            <div className={React.addons.classSet(classes)}>
                 <div className="tool-box">
+                    {this.props.editable ?
                     <button className="btn btn-default tool-box-button" onClick={this.handleAddClick}>
                         <i className="glyphicon glyphicon-plus" />
-                    </button>
+                    </button> : null
+                    }
                 </div>
                 <h2 className={this.props.items.length === 0 ? 'add-message' : 'hidden'}>アイテムを追加して下さい。</h2>
                 <ul className="item-list">

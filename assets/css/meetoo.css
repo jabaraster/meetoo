@@ -4,6 +4,9 @@
 .Page .tool-box {
   text-align: right;
 }
+.Page .status {
+  margin-bottom: 6px;
+}
 .Page .status .selected-categories,
 .Page .status .selected-hall {
   font-size: 120%;
@@ -88,26 +91,6 @@
 }
 .ItemList .add-message {
   text-align: right;
-}
-.Message {
-  position: relative;
-  top: 0px;
-  margin-left: 5%;
-  margin-right: 5%;
-  background: rgba(0, 0, 0, 0.7);
-  border-bottom-left-radius: 8px;
-  border-bottom-right-radius: 8px;
-  border-left: solid 4px rgba(255, 255, 255, 0.8);
-  border-right: solid 4px rgba(255, 255, 255, 0.8);
-  border-bottom: solid 4px rgba(255, 255, 255, 0.8);
-  padding: 5px;
-}
-.Message .tool-box {
-  margin-top: 3px;
-  text-align: right;
-}
-.Message .message-text {
-  color: #ffffff;
 }
 .icon-label {
   margin-left: 10px;

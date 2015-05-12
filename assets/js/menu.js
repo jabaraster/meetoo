@@ -163,8 +163,10 @@ window.MenuItem = React.createClass({displayName: "MenuItem",
         return (
             React.createElement("li", {className: "MenuItem"}, 
                 React.createElement("a", {href: "", className: classes, onClick: this.handleClick}, 
-                    React.createElement("i", {className: "glyphicon glyphicon-remove-sign remover", onClick: this.handleRemoveClick}), 
-                    React.createElement("i", {className: "glyphicon glyphicon-pencil editor", onClick: this.handleEditClick}), 
+                    this.props.editable ?
+                    React.createElement("i", {className: "glyphicon glyphicon-remove-sign remover", onClick: this.handleRemoveClick}) : null, 
+                    this.props.editable ?
+                    React.createElement("i", {className: "glyphicon glyphicon-pencil editor", onClick: this.handleEditClick}) : null, 
                     React.createElement("i", {className: "glyphicon glyphicon-ok check-" + (this.props.checked?"on":"off"), onClick: this.handleCheckClick}), 
                     React.createElement("i", {className: "glyphicon glyphicon-" + this.props.data.icon}), 
                     React.createElement("span", {className: "icon-label"}, this.props.data.name)
@@ -195,7 +197,9 @@ window.Menu = React.createClass({displayName: "Menu",
             success: function(data) {
                 if (this.props.onLoadCategories) this.props.onLoadCategories({ data: data });
                 var cp = data.concat();
-                cp.push({ id: "add-category", name:"(追加)", icon: "plus" });
+                if (this.editable) {
+                    cp.push({ id: "add-category", name:"(追加)", icon: "plus" });
+                }
                 this.setState({ categories: cp });
             }.bind(this),
             fail: function() {
@@ -211,7 +215,9 @@ window.Menu = React.createClass({displayName: "Menu",
             success: function(data) {
                 if (this.props.onLoadHalls) this.props.onLoadHalls({ data: data });
                 var cp = data.concat();
-                cp.push({ id: "add-hall", name:"(追加)", icon: "plus" });
+                if (this.props.editable) {
+                    cp.push({ id: "add-hall", name:"(追加)", icon: "plus" });
+                }
                 this.setState({ halls: cp });
             }.bind(this),
             fail: function() {

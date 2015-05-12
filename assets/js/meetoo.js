@@ -62,10 +62,6 @@ var Page = React.createClass({displayName: "Page",
 
             selectedHall: null,
             selectedCategories: [],
-
-            editorData: {},
-            belongHallIds: [],
-            editorVisible: false
         };
     },
     componentDidMount: function() {
@@ -73,64 +69,7 @@ var Page = React.createClass({displayName: "Page",
             this.setState({ items: response });
         }.bind(this));
     },
-    handleAddClick: function() {
-        var belongHallIds = this.state.halls.map(function(hall) {
-            return hall.id
-        });
-        this.setState({ editorVisible: true, editorData: {}, belongHallIds: belongHallIds });
-    },
-    handleItemEditClick: function(e) {
-        $.ajax({
-            url: '/items/' + e.data.id + '/belong-hall-ids',
-            type: 'get',
-            success: function(data) {
-                this.setState({ editorVisible: true, editorData: e.data, belongHallIds: data });
-            }.bind(this),
-            fail: function() {
-                console.log(arguments);
-            }
-        });
-    },
-    handleItemRemoveClick: function(e) {
-        if (!confirm('本当に削除しますか？')) {
-            this.setState({ editorVisible: false });
-            return;
-        }
-        var removeTarget;
-        var newItems = [];
-        this.state.items.forEach(function(item) {
-            if (e.data.id !== item.id) {
-                newItems.push(item);
-            } else {
-                removeTarget = item;
-            }
-        });
-        $.ajax({
-            url: '/items/' + removeTarget.id + '/remove',
-            type: 'post',
-            fail: function() {
-                console.log(arguments);
-            },
-            complete: function() {
-                this.setState({ items: newItems, editorVisible: false });
-            }.bind(this)
-        });
-    },
-    handleEditorCloseClick: function() {
-        this.setState({ editorData: {}, editorVisible: false });
-    },
-    handleInsert: function() {
-        Page.getItems(this.state, function(response) {
-            this.setState({ items: response, editorData: {}, editorVisible: false });
-        }.bind(this));
-    },
-    handleUpdate: function() {
-        Page.getItems(this.state, function(response) {
-            this.setState({ items: response, editorData: {}, editorVisible: false });
-        }.bind(this));
-    },
     handleFilter: function(e) {
-        console.log(e);
         Page.getItems(e, function(response) {
             this.setState({
                 items: response,
@@ -155,7 +94,7 @@ var Page = React.createClass({displayName: "Page",
         var selectedHall = this.state.selectedHall ? '会場：' + this.state.selectedHall.name : '' ;
         return (
             React.createElement("div", {className: "Page container"}, 
-                React.createElement(Menu, {editable: true, 
+                React.createElement(Menu, {editable: false, 
                       onFilter: this.handleFilter, 
                       onLoadCategories: this.handleLoadCategories, 
                       onLoadHalls: this.handleLoadHalls}
@@ -166,19 +105,10 @@ var Page = React.createClass({displayName: "Page",
                     React.createElement("span", {className: "selected-categories"}, selectedCategories.join(','))
                 ), 
                 React.createElement(ItemList, {items: this.state.items, 
-                          editable: true, 
-                          onAddClick: this.handleAddClick, 
-                          onItemEditClick: this.handleItemEditClick, 
-                          onItemRemoveClick: this.handleItemRemoveClick}
+                          editable: false, 
+                          cols: "6"}
                 ), 
-                React.createElement(ItemEditor, {data: this.state.editorData, 
-                            visible: this.state.editorVisible, 
-                            categories: this.state.categories, 
-                            halls: this.state.halls, 
-                            belongHallIds: this.state.belongHallIds, 
-                            onCloseClick: this.handleEditorCloseClick, 
-                            onInsert: this.handleInsert, 
-                            onUpdate: this.handleUpdate}
+                React.createElement("div", {className: "col-md-6", style: { background: 'rgba(255,0,0,.3)', height: '500px'}}
                 )
             )
         )

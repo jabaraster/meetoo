@@ -221,6 +221,42 @@ func assets_css_index_css_min() (*asset, error) {
 	return a, err
 }
 
+// assets_css_meetoo_css reads file data from disk. It returns an error on failure.
+func assets_css_meetoo_css() (*asset, error) {
+	path := "/Users/jabaraster/Documents/Develop/Go/meetoo/assets/css/meetoo.css"
+	name := "assets/css/meetoo.css"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// assets_css_meetoo_css_min reads file data from disk. It returns an error on failure.
+func assets_css_meetoo_css_min() (*asset, error) {
+	path := "/Users/jabaraster/Documents/Develop/Go/meetoo/assets/css/meetoo.css.min"
+	name := "assets/css/meetoo.css.min"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
 // assets_html_common_basic_layout_html reads file data from disk. It returns an error on failure.
 func assets_html_common_basic_layout_html() (*asset, error) {
 	path := "/Users/jabaraster/Documents/Develop/Go/meetoo/assets/html/common/basic-layout.html"
@@ -243,6 +279,24 @@ func assets_html_common_basic_layout_html() (*asset, error) {
 func assets_html_index_html() (*asset, error) {
 	path := "/Users/jabaraster/Documents/Develop/Go/meetoo/assets/html/index.html"
 	name := "assets/html/index.html"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// assets_html_meetoo_html reads file data from disk. It returns an error on failure.
+func assets_html_meetoo_html() (*asset, error) {
+	path := "/Users/jabaraster/Documents/Develop/Go/meetoo/assets/html/meetoo.html"
+	name := "assets/html/meetoo.html"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
 		return nil, err
@@ -599,6 +653,42 @@ func assets_js_item_js_min() (*asset, error) {
 	return a, err
 }
 
+// assets_js_meetoo_js reads file data from disk. It returns an error on failure.
+func assets_js_meetoo_js() (*asset, error) {
+	path := "/Users/jabaraster/Documents/Develop/Go/meetoo/assets/js/meetoo.js"
+	name := "assets/js/meetoo.js"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// assets_js_meetoo_js_min reads file data from disk. It returns an error on failure.
+func assets_js_meetoo_js_min() (*asset, error) {
+	path := "/Users/jabaraster/Documents/Develop/Go/meetoo/assets/js/meetoo.js.min"
+	name := "assets/js/meetoo.js.min"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
 // assets_js_menu_js reads file data from disk. It returns an error on failure.
 func assets_js_menu_js() (*asset, error) {
 	path := "/Users/jabaraster/Documents/Develop/Go/meetoo/assets/js/menu.js"
@@ -698,8 +788,11 @@ var _bindata = map[string]func() (*asset, error){
 	"assets/css/fonts/glyphicons-halflings-regular.woff2": assets_css_fonts_glyphicons_halflings_regular_woff2,
 	"assets/css/index.css": assets_css_index_css,
 	"assets/css/index.css.min": assets_css_index_css_min,
+	"assets/css/meetoo.css": assets_css_meetoo_css,
+	"assets/css/meetoo.css.min": assets_css_meetoo_css_min,
 	"assets/html/common/basic-layout.html": assets_html_common_basic_layout_html,
 	"assets/html/index.html": assets_html_index_html,
+	"assets/html/meetoo.html": assets_html_meetoo_html,
 	"assets/img/ff.png": assets_img_ff_png,
 	"assets/img/top.jpg": assets_img_top_jpg,
 	"assets/img/unset.png": assets_img_unset_png,
@@ -719,6 +812,8 @@ var _bindata = map[string]func() (*asset, error){
 	"assets/js/index.js.min": assets_js_index_js_min,
 	"assets/js/item.js": assets_js_item_js,
 	"assets/js/item.js.min": assets_js_item_js_min,
+	"assets/js/meetoo.js": assets_js_meetoo_js,
+	"assets/js/meetoo.js.min": assets_js_meetoo_js_min,
 	"assets/js/menu.js": assets_js_menu_js,
 	"assets/js/menu.js.min": assets_js_menu_js_min,
 }
@@ -791,6 +886,10 @@ var _bintree = &_bintree_t{nil, map[string]*_bintree_t{
 			}},
 			"index.css.min": &_bintree_t{assets_css_index_css_min, map[string]*_bintree_t{
 			}},
+			"meetoo.css": &_bintree_t{assets_css_meetoo_css, map[string]*_bintree_t{
+			}},
+			"meetoo.css.min": &_bintree_t{assets_css_meetoo_css_min, map[string]*_bintree_t{
+			}},
 		}},
 		"html": &_bintree_t{nil, map[string]*_bintree_t{
 			"common": &_bintree_t{nil, map[string]*_bintree_t{
@@ -798,6 +897,8 @@ var _bintree = &_bintree_t{nil, map[string]*_bintree_t{
 				}},
 			}},
 			"index.html": &_bintree_t{assets_html_index_html, map[string]*_bintree_t{
+			}},
+			"meetoo.html": &_bintree_t{assets_html_meetoo_html, map[string]*_bintree_t{
 			}},
 		}},
 		"img": &_bintree_t{nil, map[string]*_bintree_t{
@@ -842,6 +943,10 @@ var _bintree = &_bintree_t{nil, map[string]*_bintree_t{
 			"item.js": &_bintree_t{assets_js_item_js, map[string]*_bintree_t{
 			}},
 			"item.js.min": &_bintree_t{assets_js_item_js_min, map[string]*_bintree_t{
+			}},
+			"meetoo.js": &_bintree_t{assets_js_meetoo_js, map[string]*_bintree_t{
+			}},
+			"meetoo.js.min": &_bintree_t{assets_js_meetoo_js_min, map[string]*_bintree_t{
 			}},
 			"menu.js": &_bintree_t{assets_js_menu_js, map[string]*_bintree_t{
 			}},
