@@ -1,17 +1,69 @@
 (function($) {
 "use strict";
 
+var EstimateItem = React.createClass({displayName: "EstimateItem",
+    getInitialState: function() {
+        return {
+            data: this.props.data
+        };
+    },
+    handleAmountChange: function(e) {
+        this.state.data.amount = e.target.value - 0;
+        this.setState({ data: this.state.data }, function() {
+            if (this.props.onAmountChange) this.props.onAmountChange();
+        });
+    },
+    render: function() {
+        return (
+            React.createElement("tr", {key: "estimateItem_" + this.state.data.id}, 
+                React.createElement("td", null, this.state.data.id), 
+                React.createElement("td", null, this.state.data.name), 
+                React.createElement("td", null, String(this.state.data.unitPrice).replace( /(\d)(?=(\d\d\d)+(?!\d))/g, '$1,')), 
+                React.createElement("td", null, React.createElement("input", {type: "number", min: "0", value: this.state.data.amount, onChange: this.handleAmountChange}))
+            )
+        );
+    }
+});
+
 var Estimate = React.createClass({displayName: "Estimate",
+    computeSummaryPrice: function() {
+        var ret = 0;
+        this.props.data.forEach(function(item) {
+            var i = item.unitPrice * item.amount - 0;
+            ret += i;
+        });
+        return ret;
+    },
+    handleAmountChange: function() {
+        if (this.props.onAmountChange) this.props.onAmountChange();
+    },
     render: function() {
         var items = this.props.data.map(function(item) {
             return (
-                React.createElement("tr", null, React.createElement("td", null, item.name))
+                React.createElement(EstimateItem, {data: item, onAmountChange: this.handleAmountChange})
             );
-        });
+        }.bind(this));
         return (
             React.createElement("div", {className: "Estimate col-md-6"}, 
-                React.createElement("table", {className: "table"}, 
-                    items
+                React.createElement("div", {className: "container"}, 
+                    React.createElement("div", {className: "table-responsive"}, 
+                        React.createElement("table", {className: "table table-striped table-bordered table-hover table-condensed"}, 
+                            React.createElement("thead", null, 
+                                React.createElement("tr", null, 
+                                    React.createElement("th", null, "#"), 
+                                    React.createElement("th", null, "名称"), 
+                                    React.createElement("th", null, "単価"), 
+                                    React.createElement("th", null, "数量")
+                                )
+                            ), 
+                            React.createElement("tbody", null, 
+                                items
+                            )
+                        )
+                    )
+                ), 
+                React.createElement("div", null, 
+                    "計：", React.createElement("span", null, this.computeSummaryPrice(this.props.data)), " 円"
                 )
             )
         );
@@ -78,7 +130,18 @@ var Page = React.createClass({displayName: "Page",
         }.bind(this));
     },
     handleItemClick: function(e) {
-        this.state.estimateItems.push(e.data);
+        var listed = null;
+        this.state.estimateItems.forEach(function(item) {
+            if (item.id === e.data.id) {
+                listed = item;
+            }
+        });
+        if (listed) {
+            listed.amount++;
+        } else {
+            e.data.amount = 1;
+            this.state.estimateItems.push(e.data);
+        }
         this.setState({ estimateItems: this.state.estimateItems });
     },
     handleFilter: function(e) {
@@ -97,6 +160,9 @@ var Page = React.createClass({displayName: "Page",
     },
     handleLoadHalls: function(e) {
         this.setState({ halls: e.data });
+    },
+    handleAmountChange: function() {
+        this.setState({ estimateItems: this.state.estimateItems });
     },
     render: function() {
         var selectedCategories = [];
@@ -121,7 +187,9 @@ var Page = React.createClass({displayName: "Page",
                           cols: "6", 
                           onItemClick: this.handleItemClick}
                 ), 
-                React.createElement(Estimate, {data: this.state.estimateItems})
+                React.createElement(Estimate, {data: this.state.estimateItems, 
+                          onAmountChange: this.handleAmountChange}
+                )
             )
         )
     },

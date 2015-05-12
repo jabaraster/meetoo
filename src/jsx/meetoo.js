@@ -1,18 +1,70 @@
 (function($) {
 "use strict";
 
+var EstimateItem = React.createClass({
+    getInitialState: function() {
+        return {
+            data: this.props.data
+        };
+    },
+    handleAmountChange: function(e) {
+        this.state.data.amount = e.target.value - 0;
+        this.setState({ data: this.state.data }, function() {
+            if (this.props.onAmountChange) this.props.onAmountChange();
+        });
+    },
+    render: function() {
+        return (
+            <tr key={"estimateItem_" + this.state.data.id}>
+                <td>{this.state.data.id}</td>
+                <td>{this.state.data.name}</td>
+                <td>{String(this.state.data.unitPrice).replace( /(\d)(?=(\d\d\d)+(?!\d))/g, '$1,')}</td>
+                <td><input type="number" min="0" value={this.state.data.amount} onChange={this.handleAmountChange} /></td>
+            </tr>
+        );
+    }
+});
+
 var Estimate = React.createClass({
+    computeSummaryPrice: function() {
+        var ret = 0;
+        this.props.data.forEach(function(item) {
+            var i = item.unitPrice * item.amount - 0;
+            ret += i;
+        });
+        return ret;
+    },
+    handleAmountChange: function() {
+        if (this.props.onAmountChange) this.props.onAmountChange();
+    },
     render: function() {
         var items = this.props.data.map(function(item) {
             return (
-                <tr><td>{item.name}</td></tr>
+                <EstimateItem data={item} onAmountChange={this.handleAmountChange} />
             );
-        });
+        }.bind(this));
         return (
             <div className="Estimate col-md-6">
-                <table className="table">
-                    {items}
-                </table>
+                <div className="container">
+                    <div className="table-responsive">
+                        <table className="table table-striped table-bordered table-condensed">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>名称</th>
+                                    <th>単価</th>
+                                    <th>数量</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {items}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div>
+                    計：<span>{this.computeSummaryPrice(this.props.data)}</span> 円
+                </div>
             </div>
         );
     }
@@ -78,7 +130,18 @@ var Page = React.createClass({
         }.bind(this));
     },
     handleItemClick: function(e) {
-        this.state.estimateItems.push(e.data);
+        var listed = null;
+        this.state.estimateItems.forEach(function(item) {
+            if (item.id === e.data.id) {
+                listed = item;
+            }
+        });
+        if (listed) {
+            listed.amount++;
+        } else {
+            e.data.amount = 1;
+            this.state.estimateItems.push(e.data);
+        }
         this.setState({ estimateItems: this.state.estimateItems });
     },
     handleFilter: function(e) {
@@ -97,6 +160,9 @@ var Page = React.createClass({
     },
     handleLoadHalls: function(e) {
         this.setState({ halls: e.data });
+    },
+    handleAmountChange: function() {
+        this.setState({ estimateItems: this.state.estimateItems });
     },
     render: function() {
         var selectedCategories = [];
@@ -121,7 +187,9 @@ var Page = React.createClass({
                           cols="6"
                           onItemClick={this.handleItemClick}
                 />
-                <Estimate data={this.state.estimateItems} />
+                <Estimate data={this.state.estimateItems}
+                          onAmountChange={this.handleAmountChange}
+                />
             </div>
         )
     },
