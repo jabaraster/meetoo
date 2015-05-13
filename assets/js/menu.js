@@ -372,7 +372,7 @@ window.Menu = React.createClass({displayName: "Menu",
                 ), 
                 React.createElement("div", {className: "container"}, 
                     React.createElement("div", {className: "navbar-header"}, 
-                        React.createElement("a", {className: "navbar-brand"}, "見積ツール meetoo")
+                        React.createElement("a", {className: "navbar-brand", href: this.props.headerLinkHref, title: this.props.headerLinkTitle}, "見積ツール meetoo")
                     ), 
                     React.createElement("ul", {className: "nav navbar-nav navbar-left"}, 
                         React.createElement("li", {className: "dropdown"}, 

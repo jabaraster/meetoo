@@ -3,7 +3,7 @@
 
 # 64bit環境のWindows7へのインストール手順
 
-# 基本方針
+## 基本方針
 32bit版バイナリを吐くように構成する.
 
 64bit版はSQLite周りがうまく動かないので.
@@ -78,7 +78,7 @@ go build -o meetoo.exe src¥main.go
 
 ## 起動
 ```
-set F2_MODE=production
+set MEETOO_MODE=production
 meetoo.exe -bind=:8081
 ```
 

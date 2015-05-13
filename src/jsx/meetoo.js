@@ -47,6 +47,9 @@ var Estimate = React.createClass({
     handleItemRemoveClick: function(e) {
         if (this.props.onItemRemoveClick) this.props.onItemRemoveClick(e);
     },
+    handleClearAllClick: function() {
+        if (this.props.onClearAll) this.props.onClearAll();
+    },
     render: function() {
         var items = this.props.data.map(function(item) {
             return (
@@ -60,21 +63,24 @@ var Estimate = React.createClass({
         var total = this.computeTotalPrice();
         return (
             <div className="Estimate col-md-6">
-                <div className="table-responsive">
-                    <table className="items table table-striped table-bordered table-condensed">
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th>名称</th>
-                                <th>単価</th>
-                                <th>数量</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {items}
-                        </tbody>
-                    </table>
+                <div className="tool-box">
+                    <button className="btn btn-default tool-box-button" onClick={this.handleClearAllClick}>
+                        <i className="glyphicon glyphicon-trash" />
+                    </button>
                 </div>
+                <table className="items table table-striped table-bordered table-condensed">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>名称</th>
+                            <th>単価</th>
+                            <th>数量</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {items}
+                    </tbody>
+                </table>
                 <div>
                     計：<span className="total">{(total+"").replace( /(\d)(?=(\d\d\d)+(?!\d))/g, '$1,')}</span> 円
                 </div>
@@ -106,26 +112,17 @@ var Page = React.createClass({
                 complete: null
             });
         },
-        urlVars: function() {
-            var vars = [];
-            var max = 0;
-            var hash = '';
-            var array = '';
-            var url = window.location.search;
-
-            //?を取り除くため、1から始める。複数のクエリ文字列に対応するため、&で区切る
-            hash  = url.slice(1).split('&');
-            max = hash.length;
-            for (var i = 0; i < max; i++) {
-                array = hash[i].split('=');    //keyと値に分割。
-                vars.push(array[0]);    //末尾にクエリ文字列のkeyを挿入。
-                vars[array[0]] = array[1];    //先ほど確保したkeyに、値を代入。
-            }
-
-            return vars;
-        }()
+        estimateItemsKeyForStorage: 'meetoo_estimateItemsKeyForStorage'
     },
     getInitialState: function() {
+        var storage = sessionStorage;
+        var itemsStr = storage.getItem(Page.estimateItemsKeyForStorage);
+        var items;
+        if (!itemsStr) {
+            items = [];
+        } else {
+            items = JSON.parse(itemsStr);
+        }
         return {
             items: [],
             categories: [],
@@ -134,13 +131,15 @@ var Page = React.createClass({
             selectedHall: null,
             selectedCategories: [],
 
-            estimateItems: []
+            storage: storage,
+            estimateItems: items
         };
     },
     componentDidMount: function() {
-        Page.getItems({}, function(response) {
-            this.setState({ items: response });
-        }.bind(this));
+        this.handleFilter({});
+    },
+    saveToStorage: function() {
+        this.state.storage.setItem(Page.estimateItemsKeyForStorage, JSON.stringify(this.state.estimateItems));
     },
     handleItemClick: function(e) {
         var listed = null;
@@ -155,6 +154,7 @@ var Page = React.createClass({
             e.data.amount = 1;
             this.state.estimateItems.push(e.data);
         }
+        this.saveToStorage();
         this.setState({ estimateItems: this.state.estimateItems });
     },
     handleEstimateItemRemoveClick: function(e) {
@@ -169,6 +169,7 @@ var Page = React.createClass({
             return;
         }
         this.state.estimateItems.splice(idx, 1);
+        this.saveToStorage();
         this.setState({ estimateItems: this.state.estimateItems });
     },
     handleFilter: function(e) {
@@ -189,6 +190,13 @@ var Page = React.createClass({
         this.setState({ halls: e.data });
     },
     handleAmountChange: function() {
+        this.saveToStorage();
+        this.setState({ estimateItems: this.state.estimateItems });
+    },
+    handleClearAllEstimateItemClick: function() {
+        if (!confirm('明細を全てクリアします。この操作は取り消せません。よろしいですか？')) return;
+        this.state.estimateItems = [];
+        this.saveToStorage();
         this.setState({ estimateItems: this.state.estimateItems });
     },
     render: function() {
@@ -200,6 +208,8 @@ var Page = React.createClass({
         return (
             <div className="Page container">
                 <Menu editable={false}
+                      headerLinkHref="/"
+                      headerLinkTitle="データ管理へ"
                       onFilter={this.handleFilter}
                       onLoadCategories={this.handleLoadCategories}
                       onLoadHalls={this.handleLoadHalls}
@@ -209,14 +219,15 @@ var Page = React.createClass({
                     <span className="selected-hall">{selectedHall}</span>
                     <span className="selected-categories">{selectedCategories.join(',')}</span>
                 </div>
+                <Estimate data={this.state.estimateItems}
+                          onAmountChange={this.handleAmountChange}
+                          onItemRemoveClick={this.handleEstimateItemRemoveClick}
+                          onClearAll={this.handleClearAllEstimateItemClick}
+                />
                 <ItemList items={this.state.items}
                           editable={false}
                           cols="6"
                           onItemClick={this.handleItemClick}
-                />
-                <Estimate data={this.state.estimateItems}
-                          onAmountChange={this.handleAmountChange}
-                          onItemRemoveClick={this.handleEstimateItemRemoveClick}
                 />
             </div>
         )

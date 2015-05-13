@@ -69,9 +69,7 @@ var Page = React.createClass({
         };
     },
     componentDidMount: function() {
-        Page.getItems({}, function(response) {
-            this.setState({ items: response });
-        }.bind(this));
+        this.handleFilter({});
     },
     handleAddClick: function() {
         var belongHallIds = this.state.halls.map(function(hall) {
@@ -156,6 +154,8 @@ var Page = React.createClass({
         return (
             <div className="Page container">
                 <Menu editable={true}
+                      headerLinkHref="/meetoo"
+                      headerLinkTitle="見積へ"
                       onFilter={this.handleFilter}
                       onLoadCategories={this.handleLoadCategories}
                       onLoadHalls={this.handleLoadHalls}
