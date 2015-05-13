@@ -1,15 +1,17 @@
 package assets
 import (
-    "html/template"
-    "net/http"
-    "../env"
-    "../bindata"
-    "../bindata/debug"
     "os"
     "time"
     "fmt"
     "strings"
     "strconv"
+
+    "html/template"
+    "net/http"
+
+    "../env"
+    "../bindata"
+    "../bindata/debug"
 )
 
 const (
@@ -110,9 +112,8 @@ func (h *contentTypeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
         return
     }
     w.Header().Add("content-type", h.contentType)
-    if asset.cacheable {
-        s := time.Hour * 24 * 365
-        w.Header().Add("cache-control", fmt.Sprintf("max-age=%d", s)) //1年間キャッシュを有効にする
+    if asset.cacheable || (asset.filePath == "img/unset.png") {
+        SetCacheToHeader(w)
     }
 
     _, err2 := w.Write(data)
@@ -151,4 +152,11 @@ func mustGetInfo(path string) os.FileInfo {
         panic(e)
     }
     return f
+}
+
+func SetCacheToHeader(w http.ResponseWriter) {
+    s := time.Hour * 24 * 365
+    w.Header().Set("Cache-Control", fmt.Sprintf("pulibc, max-age=%d", s)) //1年間キャッシュを有効にする
+    w.Header().Del("Pragma")
+    w.Header().Del("Expires")
 }

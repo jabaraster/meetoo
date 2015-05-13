@@ -17,16 +17,27 @@ var EstimateItem = React.createClass({displayName: "EstimateItem",
         if (this.props.onItemRemoveClick) this.props.onItemRemoveClick({ data: this.props.data });
     },
     render: function() {
+        var data = this.state.data;
+        var sum  = data.unitPrice * data.amount;
+        var percent = Math.round(sum * 100 / this.props.total);
         return (
-            React.createElement("tr", null, 
-                React.createElement("td", null, 
+            React.createElement("tr", {className: "EstimateItem"}, 
+                React.createElement("td", {className: "trash"}, 
                     React.createElement("button", {className: "btn btn-sm", onClick: this.handleItemRemoveClick}, 
                         React.createElement("i", {className: "glyphicon glyphicon-trash"})
                     )
                 ), 
                 React.createElement("td", null, this.state.data.name), 
-                React.createElement("td", null, String(this.state.data.unitPrice).replace( /(\d)(?=(\d\d\d)+(?!\d))/g, '$1,')), 
-                React.createElement("td", null, React.createElement("input", {type: "number", min: "0", value: this.state.data.amount, onChange: this.handleAmountChange}))
+                React.createElement("td", {className: "price"}, String(this.state.data.unitPrice).replace( /(\d)(?=(\d\d\d)+(?!\d))/g, '$1,')), 
+                React.createElement("td", null, React.createElement("input", {className: "amount", type: "number", min: "0", value: this.state.data.amount, onChange: this.handleAmountChange})), 
+                React.createElement("td", {className: "price"}, String(sum).replace( /(\d)(?=(\d\d\d)+(?!\d))/g, '$1,')), 
+                React.createElement("td", null, 
+                    React.createElement("div", {className: "percent-bar-parent"}, 
+                        React.createElement("div", {className: "percent-bar", style: { width: percent+'%'}}
+                        ), 
+                        React.createElement("div", {className: "percent"}, percent, " %")
+                    )
+                )
             )
         );
     }
@@ -51,16 +62,17 @@ var Estimate = React.createClass({displayName: "Estimate",
         if (this.props.onClearAll) this.props.onClearAll();
     },
     render: function() {
+        var total = this.computeTotalPrice();
         var items = this.props.data.map(function(item) {
             return (
                 React.createElement(EstimateItem, {data: item, 
+                              total: total, 
                               key: "EstimateItem_"+item.id, 
                               onAmountChange: this.handleAmountChange, 
                               onItemRemoveClick: this.handleItemRemoveClick}
                 )
             );
         }.bind(this));
-        var total = this.computeTotalPrice();
         return (
             React.createElement("div", {className: "Estimate col-md-6"}, 
                 React.createElement("div", {className: "tool-box"}, 
@@ -74,15 +86,17 @@ var Estimate = React.createClass({displayName: "Estimate",
                             React.createElement("th", null), 
                             React.createElement("th", null, "名称"), 
                             React.createElement("th", null, "単価"), 
-                            React.createElement("th", null, "数量")
+                            React.createElement("th", null, "数量"), 
+                            React.createElement("th", null, "小計"), 
+                            React.createElement("th", null, "総計に対する割合")
                         )
                     ), 
                     React.createElement("tbody", null, 
                         items
                     )
                 ), 
-                React.createElement("div", null, 
-                    "計：", React.createElement("span", {className: "total"}, (total+"").replace( /(\d)(?=(\d\d\d)+(?!\d))/g, '$1,')), " 円"
+                React.createElement("div", {className: "total-area"}, 
+                    "総計：", React.createElement("span", {className: "total"}, String(total).replace( /(\d)(?=(\d\d\d)+(?!\d))/g, '$1,')), " 円"
                 )
             )
         );
@@ -219,15 +233,15 @@ var Page = React.createClass({displayName: "Page",
                     React.createElement("span", {className: "selected-hall"}, selectedHall), 
                     React.createElement("span", {className: "selected-categories"}, selectedCategories.join(','))
                 ), 
-                React.createElement(Estimate, {data: this.state.estimateItems, 
-                          onAmountChange: this.handleAmountChange, 
-                          onItemRemoveClick: this.handleEstimateItemRemoveClick, 
-                          onClearAll: this.handleClearAllEstimateItemClick}
-                ), 
                 React.createElement(ItemList, {items: this.state.items, 
                           editable: false, 
                           cols: "6", 
                           onItemClick: this.handleItemClick}
+                ), 
+                React.createElement(Estimate, {data: this.state.estimateItems, 
+                          onAmountChange: this.handleAmountChange, 
+                          onItemRemoveClick: this.handleEstimateItemRemoveClick, 
+                          onClearAll: this.handleClearAllEstimateItemClick}
                 )
             )
         )

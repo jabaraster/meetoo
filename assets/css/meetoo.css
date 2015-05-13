@@ -1,8 +1,52 @@
+.EstimateItem .trash {
+  text-align: center;
+}
+.EstimateItem .price {
+  text-align: right;
+}
+.EstimateItem .amount {
+  text-align: right;
+  width: 70px;
+}
+.EstimateItem .percent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: #ffffff;
+}
+.EstimateItem .percent-bar-parent {
+  width: 100px;
+  background: #643c3c;
+  position: relative;
+  border-radius: 2px;
+  min-height: 20px;
+}
+.EstimateItem .percent-bar {
+  position: absolute;
+  height: 100%;
+  background: #ff6464;
+  top: 0;
+  left: 0;
+  border-radius: 2px;
+}
+@media (min-width: 1000px) {
+  .Estimate {
+    position: fixed;
+    right: 0;
+    left: auto;
+  }
+}
+.Estimate {
+  margin-bottom: 1em;
+}
 .Estimate .items {
   box-shadow: 1px 1px 2px 0px rgba(0, 0, 0, 0.4);
 }
 .Estimate .total {
-  font-size: 150%;
+  font-size: 200%;
+  font-style: italic;
   color: #9b501e;
 }
 .Page {
@@ -102,14 +146,8 @@
 .icon-label {
   margin-left: 10px;
 }
-.MenuItem .remover {
-  color: rgba(0, 0, 0, 0);
-  margin-left: -4px;
-  margin-right: 4px;
-}
-.MenuItem .editor {
-  color: rgba(0, 0, 0, 0);
-  margin-right: 6px;
+.MenuItem {
+  cursor: pointer;
 }
 .MenuItem .check-on {
   color: #6464ff;

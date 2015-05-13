@@ -112,6 +112,9 @@
 .icon-label {
   margin-left: 10px;
 }
+.MenuItem {
+  cursor: pointer;
+}
 .MenuItem .remover {
   color: rgba(0, 0, 0, 0);
   margin-left: -4px;

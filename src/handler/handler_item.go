@@ -152,16 +152,17 @@ func GetItemImageByItemId(c web.C, w http.ResponseWriter, r *http.Request) {
         return
     }
 
+    w.Header().Add("content-type", "image/png")
+    assets.SetCacheToHeader(w)
+
     image, notFound := model.GetItemImageByItemId(itemId)
     if notFound != nil {
         unsetImageData, err := assets.GetData("img/unset.png")
         if err == nil {
-            w.Header().Add("content-type", "image/png")
             w.Write(unsetImageData)
         }
         return
     }
-    w.Header().Add("content-type", image.ContentType)
     w.Write(image.Data)
 }
 

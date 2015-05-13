@@ -17,16 +17,27 @@ var EstimateItem = React.createClass({
         if (this.props.onItemRemoveClick) this.props.onItemRemoveClick({ data: this.props.data });
     },
     render: function() {
+        var data = this.state.data;
+        var sum  = data.unitPrice * data.amount;
+        var percent = Math.round(sum * 100 / this.props.total);
         return (
-            <tr>
-                <td>
+            <tr className="EstimateItem">
+                <td className="trash">
                     <button className="btn btn-sm" onClick={this.handleItemRemoveClick}>
                         <i className="glyphicon glyphicon-trash" />
                     </button>
                 </td>
                 <td>{this.state.data.name}</td>
-                <td>{String(this.state.data.unitPrice).replace( /(\d)(?=(\d\d\d)+(?!\d))/g, '$1,')}</td>
-                <td><input type="number" min="0" value={this.state.data.amount} onChange={this.handleAmountChange} /></td>
+                <td className="price">{String(this.state.data.unitPrice).replace( /(\d)(?=(\d\d\d)+(?!\d))/g, '$1,')}</td>
+                <td><input className="amount" type="number" min="0" value={this.state.data.amount} onChange={this.handleAmountChange} /></td>
+                <td className="price">{String(sum).replace( /(\d)(?=(\d\d\d)+(?!\d))/g, '$1,')}</td>
+                <td>
+                    <div className="percent-bar-parent">
+                        <div className="percent-bar" style={{ width: percent+'%' }}>
+                        </div>
+                        <div className="percent">{percent} %</div>
+                    </div>
+                </td>
             </tr>
         );
     }
@@ -51,16 +62,17 @@ var Estimate = React.createClass({
         if (this.props.onClearAll) this.props.onClearAll();
     },
     render: function() {
+        var total = this.computeTotalPrice();
         var items = this.props.data.map(function(item) {
             return (
                 <EstimateItem data={item}
+                              total={total}
                               key={"EstimateItem_"+item.id}
                               onAmountChange={this.handleAmountChange}
                               onItemRemoveClick={this.handleItemRemoveClick}
                 />
             );
         }.bind(this));
-        var total = this.computeTotalPrice();
         return (
             <div className="Estimate col-md-6">
                 <div className="tool-box">
@@ -75,14 +87,16 @@ var Estimate = React.createClass({
                             <th>名称</th>
                             <th>単価</th>
                             <th>数量</th>
+                            <th>小計</th>
+                            <th>総計に対する割合</th>
                         </tr>
                     </thead>
                     <tbody>
                         {items}
                     </tbody>
                 </table>
-                <div>
-                    計：<span className="total">{(total+"").replace( /(\d)(?=(\d\d\d)+(?!\d))/g, '$1,')}</span> 円
+                <div className="total-area">
+                    総計：<span className="total">{String(total).replace( /(\d)(?=(\d\d\d)+(?!\d))/g, '$1,')}</span> 円
                 </div>
             </div>
         );
@@ -219,15 +233,15 @@ var Page = React.createClass({
                     <span className="selected-hall">{selectedHall}</span>
                     <span className="selected-categories">{selectedCategories.join(',')}</span>
                 </div>
-                <Estimate data={this.state.estimateItems}
-                          onAmountChange={this.handleAmountChange}
-                          onItemRemoveClick={this.handleEstimateItemRemoveClick}
-                          onClearAll={this.handleClearAllEstimateItemClick}
-                />
                 <ItemList items={this.state.items}
                           editable={false}
                           cols="6"
                           onItemClick={this.handleItemClick}
+                />
+                <Estimate data={this.state.estimateItems}
+                          onAmountChange={this.handleAmountChange}
+                          onItemRemoveClick={this.handleEstimateItemRemoveClick}
+                          onClearAll={this.handleClearAllEstimateItemClick}
                 />
             </div>
         )

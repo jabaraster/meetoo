@@ -162,11 +162,11 @@ window.MenuItem = React.createClass({
                         this.props.data.id;
         return (
             <li className="MenuItem">
-                <a href="" className={classes} onClick={this.handleClick}>
+                <a className={classes} onClick={this.handleClick}>
                     {this.props.editable ?
-                    <i className="glyphicon glyphicon-remove-sign remover" onClick={this.handleRemoveClick} /> : null }
+                    <i className="glyphicon glyphicon-remove-sign remover button" onClick={this.handleRemoveClick} /> : null }
                     {this.props.editable ?
-                    <i className="glyphicon glyphicon-pencil editor" onClick={this.handleEditClick} /> : null }
+                    <i className="glyphicon glyphicon-pencil editor button" onClick={this.handleEditClick} /> : null }
                     <i className={"glyphicon glyphicon-ok check-" + (this.props.checked?"on":"off")} onClick={this.handleCheckClick} />
                     <i className={"glyphicon glyphicon-" + this.props.data.icon} />
                     <span className="icon-label">{this.props.data.name}</span>
@@ -350,6 +350,7 @@ window.Menu = React.createClass({
                 return (
                     <MenuItem kind={kind}
                               data={data}
+                              editable={this.props.editable}
                               checked={checked}
                               key={"menuItem_" + data.id}
                               onClick={this.handleMenuItemClick}

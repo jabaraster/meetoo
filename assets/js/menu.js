@@ -162,11 +162,11 @@ window.MenuItem = React.createClass({displayName: "MenuItem",
                         this.props.data.id;
         return (
             React.createElement("li", {className: "MenuItem"}, 
-                React.createElement("a", {href: "", className: classes, onClick: this.handleClick}, 
+                React.createElement("a", {className: classes, onClick: this.handleClick}, 
                     this.props.editable ?
-                    React.createElement("i", {className: "glyphicon glyphicon-remove-sign remover", onClick: this.handleRemoveClick}) : null, 
+                    React.createElement("i", {className: "glyphicon glyphicon-remove-sign remover button", onClick: this.handleRemoveClick}) : null, 
                     this.props.editable ?
-                    React.createElement("i", {className: "glyphicon glyphicon-pencil editor", onClick: this.handleEditClick}) : null, 
+                    React.createElement("i", {className: "glyphicon glyphicon-pencil editor button", onClick: this.handleEditClick}) : null, 
                     React.createElement("i", {className: "glyphicon glyphicon-ok check-" + (this.props.checked?"on":"off"), onClick: this.handleCheckClick}), 
                     React.createElement("i", {className: "glyphicon glyphicon-" + this.props.data.icon}), 
                     React.createElement("span", {className: "icon-label"}, this.props.data.name)
@@ -350,6 +350,7 @@ window.Menu = React.createClass({displayName: "Menu",
                 return (
                     React.createElement(MenuItem, {kind: kind, 
                               data: data, 
+                              editable: this.props.editable, 
                               checked: checked, 
                               key: "menuItem_" + data.id, 
                               onClick: this.handleMenuItemClick, 
