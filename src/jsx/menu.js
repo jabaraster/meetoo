@@ -197,7 +197,7 @@ window.Menu = React.createClass({
             success: function(data) {
                 if (this.props.onLoadCategories) this.props.onLoadCategories({ data: data });
                 var cp = data.concat();
-                if (this.editable) {
+                if (this.props.editable) {
                     cp.push({ id: "add-category", name:"(追加)", icon: "plus" });
                 }
                 this.setState({ categories: cp });

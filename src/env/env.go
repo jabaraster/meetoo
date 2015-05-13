@@ -7,13 +7,13 @@ import (
 )
 
 const (
-    KeyMode = "F2_MODE"
-    KeyDbKind = "F2_DB_KIND"
-    KeyPostgresHost     = "F2_POSTGRES_HOST"
-    KeyPostgresDbName   = "F2_POSTGRES_DB_NAME"
-    KeyPostgresUser     = "F2_POSTGRES_USER"
-    KeyPostgresPassword = "F2_POSTGRES_PASSWORD"
-    KeyPostgresSslMode  = "F2_POSTGRES_SSL_MODE"
+    KeyMode             = "MEETOO_MODE"
+    KeyDbKind           = "MEETOO_DB_KIND"
+    KeyPostgresHost     = "MEETOO_POSTGRES_HOST"
+    KeyPostgresDbName   = "MEETOO_POSTGRES_DB_NAME"
+    KeyPostgresUser     = "MEETOO_POSTGRES_USER"
+    KeyPostgresPassword = "MEETOO_POSTGRES_PASSWORD"
+    KeyPostgresSslMode  = "MEETOO_POSTGRES_SSL_MODE"
 
     ModeProduction = "production"
     ModeDebug      = "debug"

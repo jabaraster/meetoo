@@ -1,3 +1,10 @@
+.Estimate .items {
+  box-shadow: 1px 1px 2px 0px rgba(0, 0, 0, 0.4);
+}
+.Estimate .total {
+  font-size: 150%;
+  color: #9b501e;
+}
 .Page {
   margin-bottom: 20px;
 }

@@ -13,10 +13,17 @@ var EstimateItem = React.createClass({displayName: "EstimateItem",
             if (this.props.onAmountChange) this.props.onAmountChange();
         });
     },
+    handleItemRemoveClick: function() {
+        if (this.props.onItemRemoveClick) this.props.onItemRemoveClick({ data: this.props.data });
+    },
     render: function() {
         return (
-            React.createElement("tr", {key: "estimateItem_" + this.state.data.id}, 
-                React.createElement("td", null, this.state.data.id), 
+            React.createElement("tr", null, 
+                React.createElement("td", null, 
+                    React.createElement("button", {className: "btn btn-sm", onClick: this.handleItemRemoveClick}, 
+                        React.createElement("i", {className: "glyphicon glyphicon-trash"})
+                    )
+                ), 
                 React.createElement("td", null, this.state.data.name), 
                 React.createElement("td", null, String(this.state.data.unitPrice).replace( /(\d)(?=(\d\d\d)+(?!\d))/g, '$1,')), 
                 React.createElement("td", null, React.createElement("input", {type: "number", min: "0", value: this.state.data.amount, onChange: this.handleAmountChange}))
@@ -26,7 +33,7 @@ var EstimateItem = React.createClass({displayName: "EstimateItem",
 });
 
 var Estimate = React.createClass({displayName: "Estimate",
-    computeSummaryPrice: function() {
+    computeTotalPrice: function() {
         var ret = 0;
         this.props.data.forEach(function(item) {
             var i = item.unitPrice * item.amount - 0;
@@ -37,33 +44,39 @@ var Estimate = React.createClass({displayName: "Estimate",
     handleAmountChange: function() {
         if (this.props.onAmountChange) this.props.onAmountChange();
     },
+    handleItemRemoveClick: function(e) {
+        if (this.props.onItemRemoveClick) this.props.onItemRemoveClick(e);
+    },
     render: function() {
         var items = this.props.data.map(function(item) {
             return (
-                React.createElement(EstimateItem, {data: item, onAmountChange: this.handleAmountChange})
+                React.createElement(EstimateItem, {data: item, 
+                              key: "EstimateItem_"+item.id, 
+                              onAmountChange: this.handleAmountChange, 
+                              onItemRemoveClick: this.handleItemRemoveClick}
+                )
             );
         }.bind(this));
+        var total = this.computeTotalPrice();
         return (
             React.createElement("div", {className: "Estimate col-md-6"}, 
-                React.createElement("div", {className: "container"}, 
-                    React.createElement("div", {className: "table-responsive"}, 
-                        React.createElement("table", {className: "table table-striped table-bordered table-hover table-condensed"}, 
-                            React.createElement("thead", null, 
-                                React.createElement("tr", null, 
-                                    React.createElement("th", null, "#"), 
-                                    React.createElement("th", null, "名称"), 
-                                    React.createElement("th", null, "単価"), 
-                                    React.createElement("th", null, "数量")
-                                )
-                            ), 
-                            React.createElement("tbody", null, 
-                                items
+                React.createElement("div", {className: "table-responsive"}, 
+                    React.createElement("table", {className: "items table table-striped table-bordered table-condensed"}, 
+                        React.createElement("thead", null, 
+                            React.createElement("tr", null, 
+                                React.createElement("th", null), 
+                                React.createElement("th", null, "名称"), 
+                                React.createElement("th", null, "単価"), 
+                                React.createElement("th", null, "数量")
                             )
+                        ), 
+                        React.createElement("tbody", null, 
+                            items
                         )
                     )
                 ), 
                 React.createElement("div", null, 
-                    "計：", React.createElement("span", null, this.computeSummaryPrice(this.props.data)), " 円"
+                    "計：", React.createElement("span", {className: "total"}, (total+"").replace( /(\d)(?=(\d\d\d)+(?!\d))/g, '$1,')), " 円"
                 )
             )
         );
@@ -144,6 +157,20 @@ var Page = React.createClass({displayName: "Page",
         }
         this.setState({ estimateItems: this.state.estimateItems });
     },
+    handleEstimateItemRemoveClick: function(e) {
+        var idx = -1;
+        this.state.estimateItems.forEach(function(item, i) {
+            if (item.id === e.data.id) {
+                idx = i;
+                return false;
+            }
+        });
+        if (idx < 0) {
+            return;
+        }
+        this.state.estimateItems.splice(idx, 1);
+        this.setState({ estimateItems: this.state.estimateItems });
+    },
     handleFilter: function(e) {
         Page.getItems(e, function(response) {
             this.setState({
@@ -188,7 +215,8 @@ var Page = React.createClass({displayName: "Page",
                           onItemClick: this.handleItemClick}
                 ), 
                 React.createElement(Estimate, {data: this.state.estimateItems, 
-                          onAmountChange: this.handleAmountChange}
+                          onAmountChange: this.handleAmountChange, 
+                          onItemRemoveClick: this.handleEstimateItemRemoveClick}
                 )
             )
         )
