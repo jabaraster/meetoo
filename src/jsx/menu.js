@@ -119,6 +119,9 @@ window.MenuItemEditor = React.createClass({
                                        onChange={this.handleIconChange}
                                        placeholder="アイコン名"
                                 />
+                                <a className="go-icon-list" href="http://getbootstrap.com/components/#glyphicons" target="icon-list">
+                                    アイコン一覧はこちらから(glyphicon-以降を入力して下さい)
+                                </a>
                             </div>
                         </form>
                       </div>
@@ -378,20 +381,20 @@ window.Menu = React.createClass({
                     <ul className="nav navbar-nav navbar-left">
                         <li className="dropdown">
                             <a href="" className="dropdown-toggle" data-toggle="dropdown">
-                                カテゴリ<span className="caret"></span>
+                                会場<span className="caret"></span>
                             </a>
                             <ul className="dropdown-menu">
-                                {categoryMenus}
+                                {hallMenus}
                             </ul>
                         </li>
                     </ul>
                     <ul className="nav navbar-nav navbar-left">
                         <li className="dropdown">
                             <a href="" className="dropdown-toggle" data-toggle="dropdown">
-                                会場<span className="caret"></span>
+                                カテゴリ<span className="caret"></span>
                             </a>
                             <ul className="dropdown-menu">
-                                {hallMenus}
+                                {categoryMenus}
                             </ul>
                         </li>
                     </ul>

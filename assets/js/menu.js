@@ -118,6 +118,9 @@ window.MenuItemEditor = React.createClass({displayName: "MenuItemEditor",
                                        value: this.state.icon, 
                                        onChange: this.handleIconChange, 
                                        placeholder: "アイコン名"}
+                                ), 
+                                React.createElement("a", {className: "go-icon-list", href: "http://getbootstrap.com/components/#glyphicons", target: "icon-list"}, 
+                                    "アイコン一覧はこちらから(glyphicon-以降を入力して下さい)"
                                 )
                             )
                         )
@@ -378,20 +381,20 @@ window.Menu = React.createClass({displayName: "Menu",
                     React.createElement("ul", {className: "nav navbar-nav navbar-left"}, 
                         React.createElement("li", {className: "dropdown"}, 
                             React.createElement("a", {href: "", className: "dropdown-toggle", "data-toggle": "dropdown"}, 
-                                "カテゴリ", React.createElement("span", {className: "caret"})
+                                "会場", React.createElement("span", {className: "caret"})
                             ), 
                             React.createElement("ul", {className: "dropdown-menu"}, 
-                                categoryMenus
+                                hallMenus
                             )
                         )
                     ), 
                     React.createElement("ul", {className: "nav navbar-nav navbar-left"}, 
                         React.createElement("li", {className: "dropdown"}, 
                             React.createElement("a", {href: "", className: "dropdown-toggle", "data-toggle": "dropdown"}, 
-                                "会場", React.createElement("span", {className: "caret"})
+                                "カテゴリ", React.createElement("span", {className: "caret"})
                             ), 
                             React.createElement("ul", {className: "dropdown-menu"}, 
-                                hallMenus
+                                categoryMenus
                             )
                         )
                     )

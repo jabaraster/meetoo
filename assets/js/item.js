@@ -148,7 +148,7 @@ window.ItemEditor = React.createClass({displayName: "ItemEditor",
                 id: this.props.data.id,
                 name: this.props.data.name,
                 unitPrice: this.props.data.unitPrice,
-                categoryId: this.props.data.categoryId,
+                categoryId: this.props.data.categoryId ? this.props.data.categoryId : '', // selectのときはこうしないと空値が反映されない
                 description: this.props.data.description ? this.props.data.description : '' , // textareaのときはこうしないと空値が反映されない
                 url: this.props.data.id ? '/items/' + this.props.data.id + '___' + this.props.data.imageTimestamp + '/image' : '/img/unset.png',
             });

@@ -17,10 +17,17 @@ var Page = React.createClass({
                 }
             });
         },
+        toArray: function(obj) {
+            var ret = [];
+            for (var p in obj) {
+                ret.push(obj[p]);
+            }
+            return ret;
+        },
         getItems: function(parameter, successHandler) {
             var categories = [];
-            for (var d in parameter.selectedCategories) {
-                categories.push(parameter.selectedCategories[d].id);
+            for (var p in parameter.selectedCategories) {
+                categories.push(parameter.selectedCategories[p].id);
             }
             $.ajax({
                 url: '/items/',
@@ -75,7 +82,15 @@ var Page = React.createClass({
         var belongHallIds = this.state.halls.map(function(hall) {
             return hall.id
         });
-        this.setState({ editorVisible: true, editorData: {}, belongHallIds: belongHallIds });
+
+        // カテゴリが選択されている場合はそれを初期設定値にする.
+        var categoryId;
+        if (this.state.selectedCategories && this.state.selectedCategories.length > 0) {
+            categoryId = this.state.selectedCategories[0].id;
+        } else {
+            categoryId = null;
+        }
+        this.setState({ editorVisible: true, editorData: { categoryId: categoryId }, belongHallIds: belongHallIds });
     },
     handleItemEditClick: function(e) {
         $.ajax({
@@ -128,14 +143,13 @@ var Page = React.createClass({
         }.bind(this));
     },
     handleFilter: function(e) {
-        console.log(e);
         Page.getItems(e, function(response) {
             this.setState({
                 items: response,
                 editorData: {},
                 editorVisible: false,
                 selectedHall: e.selectedHall,
-                selectedCategories: e.selectedCategories
+                selectedCategories: Page.toArray(e.selectedCategories)
             });
         }.bind(this));
     },
@@ -146,10 +160,9 @@ var Page = React.createClass({
         this.setState({ halls: e.data });
     },
     render: function() {
-        var selectedCategories = [];
-        for (var p in this.state.selectedCategories) {
-            selectedCategories.push(this.state.selectedCategories[p].name);
-        }
+        var selectedCategories = this.state.selectedCategories.map(function(c) {
+            return c.name;
+        });
         var selectedHall = this.state.selectedHall ? '会場：' + this.state.selectedHall.name : '' ;
         return (
             <div className="Page container">

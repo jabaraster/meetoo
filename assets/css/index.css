@@ -112,6 +112,9 @@
 .icon-label {
   margin-left: 10px;
 }
+.MenuItemEditor .go-icon-list {
+  color: #ff9664;
+}
 .MenuItem {
   cursor: pointer;
 }
