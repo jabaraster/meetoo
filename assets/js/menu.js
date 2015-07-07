@@ -363,8 +363,8 @@ window.Menu = React.createClass({displayName: "Menu",
                 );
             }.bind(this);
         }.bind(this);
-        var categoryMenus = this.state.categories.map(menuGeneratorGenerator('categories'));
         var hallMenus = this.state.halls.map(menuGeneratorGenerator('halls'));
+        var categoryMenus = this.state.categories.map(menuGeneratorGenerator('categories'));
         return (
             React.createElement("nav", {className: "navbar navbar-inverse"}, 
                 React.createElement(MenuItemEditor, {title: this.state.editorTitle, 

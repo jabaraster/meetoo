@@ -67,6 +67,10 @@ func GetItems(hallId *int64, categoryIds []int64) []Item {
     }
 
     belongItemIds := getHallBelongItemIds(*hallId)
+    if len(belongItemIds) == 0 {
+        return []Item{}
+    }
+
     var items []Item
     if err := db.Select(&items, getInWhereInt("category_id",categoryIds).And(getInWhereInt("id",belongItemIds))); err != nil {
         panic(err)
