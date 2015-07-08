@@ -37,6 +37,52 @@ GoのライブラリをGitHubからダウンロードするのに必要
 ※インストールに際してはコマンドプロンプトで使えるようにすること！  
 ![コマンドプロンプト対応でインストール](./docimage/git_install_prompt.png "コマンドプロンプト対応でインストール")
 
+
+## 少し寄り道・meetooの起動
+ここまで来れば、コンパイルせずとも```go run```コマンドでmeetooを起動することが出来る.  
+コマンドプロンプトで下記のコマンドを実行すること.
+
+### 必要なライブラリの取得
+
+```
+go get github.com/lib/pq
+```
+
+```
+go get github.com/mattn/go-sqlite3
+```
+
+```
+go get github.com/naoina/genmai
+```
+
+```
+go get github.com/vincent-petithory/dataurl
+```
+
+```
+go get github.com/zenazn/goji/web
+```
+
+
+### meetooのソースの取得
+
+```
+go get github.com/jabaraster/meetoo
+```
+
+### 起動
+```
+cd %gopath%\src\github.com\jabaraster\meetoo
+set MEETOO_MODE=production
+go run src\main.go
+```
+
+以下のURLにアクセス.
+
+[http://localhost:8000/](http://localhost:8000/)
+
+
 ## gccインストール
 MinGWとiいうソフトウェアでgccをインストールする.
 
