@@ -87,9 +87,10 @@ go run src\main.go
 MinGWとiいうソフトウェアでgccをインストールする.
 
 ### インストーラダウンロードページ
+
 [http://sourceforge.net/projects/mingw/files/Installer/](http://sourceforge.net/projects/mingw/files/Installer/)
 
-```mingw-get-setup.exe```をクリックしてインストーラをダウンロードすること.
+```mingw-get-setup.exe``` をクリックしてインストーラをダウンロードすること.
 
 インストーラの実行にはインターネット接続が必要.
 
