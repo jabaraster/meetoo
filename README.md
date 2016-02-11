@@ -42,9 +42,38 @@ GoのライブラリをGitHubからダウンロードするのに必要
 ![コマンドプロンプト対応でインストール](./docimage/git_install_prompt.png "コマンドプロンプト対応でインストール")
 
 
-## 少し寄り道・meetooの起動
-ここまで来れば、コンパイルせずとも```go run```コマンドでmeetooを起動することが出来る.  
-コマンドプロンプトで下記のコマンドを実行すること.
+## gccインストール
+Goのライブラリのビルドに使われるgccをインストールしておく.  
+MinGWとiいうソフトウェアでgccをインストールする.
+
+### インストーラダウンロードページ
+
+[http://sourceforge.net/projects/mingw/files/Installer/](http://sourceforge.net/projects/mingw/files/Installer/)
+
+```mingw-get-setup.exe``` をクリックしてインストーラをダウンロードすること.
+
+インストーラの実行にはインターネット接続が必要.
+
+また上記ファイルはインストーラではあるが、基本的なファイルをインストールした後、追加でgccをインストールする必要がある.  
+GUIで、```mingw32-gcc-g++```にチェックを付けた後、メニューの「Installation」→「Apply」を選択すると、インストールが始まる.
+![gccの追加インストール](./docimage/mingw_setup.png "gccの追加インストール")
+
+### 環境変数設定
+
+環境変数```PATH```に```c:¥MinGW¥bin```を追加すること.
+
+## zlib1.dllインストール
+このdllはCのソースをGoから使うときに必要なようだが、Goに含まれていないため、別途インストールが必要.
+
+[https://ljedit.googlecode.com/files/zlib1.zip](https://ljedit.googlecode.com/files/zlib1.zip)
+
+解凍して現れる```zlib1.dll```を```c:¥MinGW¥bin```に置く.
+
+[参考ページ(Yahoo!知恵袋)](http://detail.chiebukuro.yahoo.co.jp/qa/question_detail/q10140858135)
+
+
+
+## meetooソースの取得
 
 ### 必要なライブラリの取得
 
@@ -86,34 +115,6 @@ go run src\main.go
 
 [http://localhost:8000/](http://localhost:8000/)
 
-
-## gccインストール
-MinGWとiいうソフトウェアでgccをインストールする.
-
-### インストーラダウンロードページ
-
-[http://sourceforge.net/projects/mingw/files/Installer/](http://sourceforge.net/projects/mingw/files/Installer/)
-
-```mingw-get-setup.exe``` をクリックしてインストーラをダウンロードすること.
-
-インストーラの実行にはインターネット接続が必要.
-
-また上記ファイルはインストーラではあるが、基本的なファイルをインストールした後、追加でgccをインストールする必要がある.  
-GUIで、```mingw32-gcc-g++```にチェックを付けた後、メニューの「Installation」→「Apply」を選択すると、インストールが始まる.
-![gccの追加インストール](./docimage/mingw_setup.png "gccの追加インストール")
-
-### 環境変数設定
-
-環境変数```PATH```に```c:¥MinGW¥bin```を追加すること.
-
-## zlib1.dllインストール
-このdllはCのソースをGoから使うときに必要なようだが、Goに含まれていないため、別途インストールが必要.
-
-[https://ljedit.googlecode.com/files/zlib1.zip](https://ljedit.googlecode.com/files/zlib1.zip)
-
-解凍して現れる```zlib1.dll```を```c:¥MinGW¥bin```に置く.
-
-[参考ページ(Yahoo!知恵袋)](http://detail.chiebukuro.yahoo.co.jp/qa/question_detail/q10140858135)
 
 ## Goのライブラリをインストール
 ```
