@@ -125,7 +125,7 @@ go run src\main.go
 meetooではgo以外の開発ツールとして以下のものを使っている.  
 
 * [goemon](https://github.com/mattn/goemon)：lessやjsxなどの変換処理の必要なファイルを監視し、変更があったら変換コマンドを実行するツール
-* go-bindata：リソースファイルをgoのソースファイルに変換してくれるツール. これにより静的リソースをexeに含めることができるようになるので、アプリの配備がexeを置くだけ、という簡単さになる.  
+* [go-bindata](https://github.com/jteeuwen/go-bindata)：リソースファイルをgoのソースファイルに変換してくれるツール. これにより静的リソースをexeに含めることができるようになるので、アプリの配備がexeを置くだけ、という簡単さになる.  
 * [node.js](https://nodejs.org/)：less→CSS変換やjsx→js変換を行うコマンドを実行するのに必要. node.jsのパッケージ管理ソフトであるnpmもインストールする
 
 ## 環境変数設定
