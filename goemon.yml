@@ -3,35 +3,39 @@ tasks:
 
 - match: './src/less/common/*.less'
   commands:
-  - lessc ${GOEMON_TARGET_FILE} > assets/css/common/${GOEMON_TARGET_NAME}.css
+  -  node node_modules\less\bin\lessc ${GOEMON_TARGET_FILE} > assets/css/common/${GOEMON_TARGET_NAME}.css
 
 - match: './src/less/*.less'
   commands:
-  - lessc ${GOEMON_TARGET_FILE} > assets/css/${GOEMON_TARGET_NAME}.css
+  - node node_modules\less\bin\lessc ${GOEMON_TARGET_FILE} > assets/css/${GOEMON_TARGET_NAME}.css
 
-- match: './src/jsx/**/*.js'
+- match: './src/jsx/*.js'
   commands:
-  - jsx --no-cache-dir src/jsx assets/js
+  - node node_modules\babel-cli\bin\babel .\src\jsx\${GOEMON_TARGET_NAME}.js --out-file assets\js\${GOEMON_TARGET_NAME}.js
+
+- match: './src/jsx/common/*.js'
+  commands:
+  - node node_modules\babel-cli\bin\babel .\src\jsx\common\${GOEMON_TARGET_NAME}.js --out-file assets\js\common\${GOEMON_TARGET_NAME}.js
 
 - match: './src/html/*.html'
   commands:
-  - cp ${GOEMON_TARGET_FILE} assets/html/${GOEMON_TARGET_NAME}.html
+  - copy /Y .\src\html\${GOEMON_TARGET_NAME}.html assets\html\${GOEMON_TARGET_NAME}.html
 
 - match: './src/html/common/*.html'
   commands:
-  - cp ${GOEMON_TARGET_FILE} assets/html/common/${GOEMON_TARGET_NAME}.html
+  - copy /Y .\src\html\common\${GOEMON_TARGET_NAME}.html assets\html\common\${GOEMON_TARGET_NAME}.html
 
 - match: './assets/css/**/*.css'
   commands:
-  - uglifycss ${GOEMON_TARGET_FILE} > ${GOEMON_TARGET_DIR}/${GOEMON_TARGET_NAME}.css.min
+  - node node_modules\uglifycss\uglifycss ${GOEMON_TARGET_FILE} > ${GOEMON_TARGET_DIR}/${GOEMON_TARGET_NAME}.css.min
 
 - match: './assets/js/*.js'
   commands:
-  - minifyjs -m -i ${GOEMON_TARGET_FILE} -o ${GOEMON_TARGET_DIR}/${GOEMON_TARGET_NAME}.js.min
+  - node node_modules\minifyjs\bin\minify -m -i .\assets\js\${GOEMON_TARGET_NAME}.js -o ${GOEMON_TARGET_DIR}/${GOEMON_TARGET_NAME}.js.min
 
-- match: './assets/js/common/indicator.js'
+- match: './assets/js/common/*.js'
   commands:
-  - minifyjs -m -i ${GOEMON_TARGET_FILE} -o ${GOEMON_TARGET_DIR}/${GOEMON_TARGET_NAME}.js.min
+  - node node_modules\minifyjs\bin\minify -m -i .\assets\js\common\${GOEMON_TARGET_NAME}.js -o ${GOEMON_TARGET_DIR}/${GOEMON_TARGET_NAME}.js.min
 
 - match: './assets/**/*'
   commands:
