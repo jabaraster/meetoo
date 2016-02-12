@@ -138,7 +138,10 @@ go get github.com/mattn/goemon/cmd/goemon
 
 ## node.jsとnpmのインストール
 
+node.jsのインストーラを[ここ](https://nodejs.org/en/)からダウンロードする.  
+なおインストーラにはLTSとStableがあるが、Stable版を使う.  
 
+このインストーラを使うとnpmもインストールされる.  ラクチン.  
 
 # ビルド手順
 
