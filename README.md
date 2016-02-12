@@ -125,10 +125,15 @@ go run src\main.go
 meetooではgo以外の開発ツールとして以下のものを使っている.  
 
 * [goemon](https://github.com/mattn/goemon)：lessやjsxなどの変換処理の必要なファイルを監視し、変更があったら変換コマンドを実行するツール
+* go-bindata：リソースファイルをgoのソースファイルに変換してくれるツール. これにより静的リソースをexeに含めることができるようになるので、アプリの配備がexeを置くだけ、という簡単さになる.  
 * [node.js](https://nodejs.org/)：less→CSS変換やjsx→js変換を行うコマンドを実行するのに必要. node.jsのパッケージ管理ソフトであるnpmもインストールする
 
+## 環境変数設定
+環境変数``` PATH ```に``` %GOPATH%bin ```を追記する.   
+（goで出来たツールがこの場所に置かれるため）   
+
 ## goemonインストール
-これは簡単. go getするだけ.  
+go getするだけ.  
 
 ```
 go get github.com/mattn/goemon/cmd/goemon
@@ -136,12 +141,51 @@ go get github.com/mattn/goemon/cmd/goemon
 
 これで```goemon```というコマンドが実行可能になる.  
 
+## go-bindataインストール
+go getするだけ.
+
+```
+go get github.com/jteeuwen/go-bindata/...
+```
+
 ## node.jsとnpmのインストール
 
-node.jsのインストーラを[ここ](https://nodejs.org/en/)からダウンロードする.  
+node.jsのインストーラを[ここ](https://nodejs.org/en/)からダウンロードしてインストールする.  
 なおインストーラにはLTSとStableがあるが、Stable版を使う.  
 
 このインストーラを使うとnpmもインストールされる.  ラクチン.  
+
+インストールできたかどうかの確認は、コマンドプロンプトで以下のコマンドを実行する.  
+
+```
+node -v
+```
+
+```
+npm -v
+```
+
+## node.jsのライブラリのインストール
+
+less→CSSを変換する``` lessc ```コマンドなどは、npmでインストールする.  
+下記コマンドで必要なコマンドすべてを一発でインストールできる. 
+
+```
+npm install
+```
+
+## goemonの起動
+開発中はgoemonをずっと起動したままにするのが基本. 以下コマンドで起動する.  
+
+```
+goemon -c goemon.yml
+```
+
+これで、html/js/lessが編集されたら自動で以下の処理が実行される.  
+
+* 変換(jsx形式→js形式、less形式→css形式）
+* 変換結果をassetsフォルダ下に出力
+* go-bindataでリソースをgoソースファイルに変換
 
 # ビルド手順
 
