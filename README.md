@@ -126,7 +126,9 @@ meetooではgo以外の開発ツールとして以下のものを使っている
 
 * [goemon](https://github.com/mattn/goemon)：lessやjsxなどの変換処理の必要なファイルを監視し、変更があったら変換コマンドを実行するツール
 * [go-bindata](https://github.com/jteeuwen/go-bindata)：リソースファイルをgoのソースファイルに変換してくれるツール. これにより静的リソースをexeに含めることができるようになるので、アプリの配備がexeを置くだけ、という簡単さになる.  
-* [node.js](https://nodejs.org/)：less→CSS変換やjsx→js変換を行うコマンドを実行するのに必要. node.jsのパッケージ管理ソフトであるnpmもインストールする
+* [node.js](https://nodejs.org/)：less→CSS変換やjsx→js変換を行うコマンドを実行するのに必要. node.jsのパッケージ管理ソフトであるnpmもインストールする.  
+
+なおコマンドを実行する時は基本的にプロジェクトフォルダの直下で実行すること.  
 
 ## 環境変数設定
 環境変数``` PATH ```に``` %GOPATH%bin ```を追記する.   
@@ -168,7 +170,7 @@ npm -v
 ## node.jsのライブラリのインストール
 
 less→CSSを変換する``` lessc ```コマンドなどは、npmでインストールする.  
-下記コマンドで必要なコマンドすべてを一発でインストールできる. 
+インストールすべきライブラリはpackage.jsonに書いてあるため、下記コマンドで必要なコマンドすべてを一発でインストールできる. ラクチン.   
 
 ```
 npm install
